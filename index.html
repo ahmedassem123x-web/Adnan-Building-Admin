@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>لوحة تحكم عدنان للبناء</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#eef1f3;color:#10263a;font-family:"IBM Plex Sans Arabic",Tahoma,"Segoe UI",sans-serif;line-height:1.8;font-size:16px}
+a{color:inherit}
+.wrap{max-width:1080px;margin:0 auto;padding:0 18px}
+.hidden{display:none!important}
+.topbar{background:#10263a;color:#fff;padding:14px 0;position:sticky;top:0;z-index:10}
+.topbar .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.topbar strong{font-size:18px}
+.topnote{color:#b6c3cd;font-size:13px}
+.topbar .spacer{flex:1}
+.card{background:#fff;border:1px solid #d9dee2;border-radius:8px;padding:22px}
+.gate{max-width:460px;margin:48px auto}
+.gate h1{font-size:24px;margin:0 0 8px}
+.gate h2{font-size:19px;margin:0 0 12px}
+.note{color:#55646f;font-size:14px}
+.err{color:#b3261e;font-size:14px;min-height:1.4em;margin:8px 0}
+.lock{color:#8a5a00;background:#fff4d6;border:1px solid #e8c97a;border-radius:6px;padding:10px 12px;font-size:14px}
+label{display:grid;gap:6px;font-size:14px;color:#55646f;margin-bottom:14px}
+input,textarea,select{font:inherit;padding:10px 12px;border:1px solid #d9dee2;border-radius:6px;width:100%;background:#fff;color:#10263a}
+textarea{resize:vertical;min-height:76px}
+input[type=color]{padding:2px;height:42px;cursor:pointer}
+.btn{display:inline-block;padding:11px 22px;background:#b9822a;color:#fff;font-weight:600;border:0;border-radius:6px;cursor:pointer;font:inherit}
+.btn:hover{background:#a57324}
+.btn.ghost{background:transparent;color:#10263a;border:1px solid #d9dee2}
+.btn.small{padding:7px 14px;font-size:14px}
+.btn.danger{background:#b3261e}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 6px}
+.tabs button{padding:10px 18px;border:1px solid #d9dee2;background:#fff;border-radius:6px;cursor:pointer;font:inherit;color:#10263a}
+.tabs button.active{background:#10263a;color:#fff;border-color:#10263a}
+.saved{color:#55646f;font-size:13px;margin:0 0 14px}
+.sec-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.sec-head h2{margin:0;font-size:21px}
+.field{margin-bottom:14px}
+.field>span{display:block;font-size:14px;color:#55646f;margin-bottom:6px}
+.list-item{border:1px solid #d9dee2;border-radius:6px;padding:12px;margin-bottom:10px;background:#fbfcfd}
+.list-item .row{display:flex;gap:8px;flex-wrap:wrap}
+.list-item .row .field{flex:1;min-width:140px;margin-bottom:6px}
+.mini-btn{padding:5px 10px;border:1px solid #d9dee2;background:#fff;border-radius:5px;cursor:pointer;font:inherit;font-size:13px}
+.mini-btn:hover{background:#f4f5f6}
+.theme-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #eef1f3;flex-wrap:wrap}
+.theme-row .tlabel{flex:1;min-width:150px}
+.theme-row input[type=color]{width:52px;flex:none}
+.theme-row input[type=text]{width:110px;flex:none;direction:ltr;text-align:left}
+.sc-row{border:1px solid #d9dee2;border-radius:6px;padding:12px;margin-bottom:10px}
+.sc-row .sc-head{font-weight:600;margin-bottom:8px}
+.sc-row .sc-fields{display:flex;gap:18px;flex-wrap:wrap}
+.sc-row label{display:flex;align-items:center;gap:8px;margin:0;font-size:14px;color:#10263a}
+.sc-row input[type=checkbox]{width:auto}
+.sc-row input[type=color]{width:52px}
+.preview-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.preview-bar .wbtn{padding:8px 14px;border:1px solid #d9dee2;background:#fff;border-radius:6px;cursor:pointer;font:inherit}
+.preview-bar .wbtn.active{background:#10263a;color:#fff;border-color:#10263a}
+.preview-wrap{margin:0 auto;border:1px solid #d9dee2;border-radius:8px;overflow:hidden;background:#fff;transition:max-width .3s}
+.preview-wrap iframe{display:block;width:100%;height:760px;border:0}
+.pub-note{background:#f4f5f6;border:1px solid #d9dee2;border-radius:6px;padding:12px 14px;font-size:14px;color:#55646f}
+.hist{margin-top:14px}
+.hist button{margin-inline-start:8px}
+.kv{font-size:14px;color:#55646f}
+@media (max-width:640px){.gate{margin:24px auto}.card{padding:16px}.preview-wrap iframe{height:600px}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="wrap"><strong>لوحة تحكم عدنان للبناء</strong><span class="topnote">خاصة — لا تؤثر على الموقع الحي</span><span class="spacer"></span><button id="logoutBtn" class="btn small hidden">تسجيل الخروج</button></div></header>
+<main class="wrap">
+
+<section id="gate" class="gate card">
+<h1>لوحة تحكم عدنان للبناء</h1>
+<p class="note">هذه اللوحة خاصة بك وحدك. كلمة المرور تُحفظ في هذا المتصفح فقط بصيغة مشفّرة، ولا يعرفها أحد غيرك. إذا نسيتها، امسح بيانات هذا الموقع من إعدادات المتصفح وستظهر شاشة تعيين كلمة مرور جديدة.</p>
+<form id="setupForm" class="hidden" autocomplete="off">
+<h2>تعيين كلمة المرور (أول مرة)</h2>
+<label>كلمة المرور الجديدة (8 أحرف على الأقل)<input type="password" id="setupPass" autocomplete="new-password" minlength="8"></label>
+<label>تأكيد كلمة المرور<input type="password" id="setupPass2" autocomplete="new-password"></label>
+<p class="err" id="setupErr"></p>
+<button class="btn" type="submit">تعيين كلمة المرور والدخول</button>
+</form>
+<form id="loginForm" class="hidden" autocomplete="off">
+<h2>تسجيل الدخول</h2>
+<label>اسم المستخدم<input type="text" id="loginUser" value="admin" autocomplete="username" dir="ltr"></label>
+<label>كلمة المرور<input type="password" id="loginPass" autocomplete="current-password"></label>
+<p class="err" id="loginErr"></p>
+<p class="lock hidden" id="lockMsg"></p>
+<button class="btn" type="submit" id="loginBtn">دخول</button>
+</form>
+<p class="err" id="gateErr"></p>
+</section>
+
+<section id="app" class="hidden">
+<nav class="tabs" id="tabs">
+<button data-tab="content" class="active">المحتوى</button>
+<button data-tab="theme">الألوان</button>
+<button data-tab="preview">المعاينة</button>
+<button data-tab="publish">النشر</button>
+</nav>
+<p class="saved" id="savedNote">التعديلات تُحفظ تلقائيًا في هذا المتصفح.</p>
+
+<div id="tab-content">
+<div class="sec-head"><h2>تحرير الأقسام</h2><select id="sectionSelect" style="width:auto;min-width:200px">
+<option value="header">الترويسة</option>
+<option value="hero">قسم البطل</option>
+<option value="facts">شريط الحقائق</option>
+<option value="services">خدماتنا</option>
+<option value="about">عن الشركة</option>
+<option value="contact">تواصل معنا</option>
+<option value="footer">التذييل</option>
+</select></div>
+<div id="editorArea" class="card"></div>
+</div>
+
+<div id="tab-theme" class="hidden">
+<div class="card">
+<div class="sec-head"><h2>ألوان الموقع العامة</h2><button class="btn ghost small" id="resetThemeBtn">إعادة ضبط الألوان</button></div>
+<p class="note">هذه ألوان النسخة الفاتحة من الموقع. ألوان الوضع الداكن تبقى كما هي في الموقع.</p>
+<div id="themeArea"></div>
+</div>
+<div class="card" style="margin-top:14px">
+<div class="sec-head"><h2>لون كل قسم على حدة</h2></div>
+<p class="note">اترك القسم بدون تخصيص ليستخدم ألوان الموقع العامة.</p>
+<div id="sectionColorsArea"></div>
+</div>
+</div>
+
+<div id="tab-preview" class="hidden">
+<div class="preview-bar">
+<span class="kv">عرض المعاينة:</span>
+<button class="wbtn" data-w="390">جوال 390</button>
+<button class="wbtn" data-w="820">لوحي 820</button>
+<button class="wbtn active" data-w="1280">حاسوب 1280</button>
+<button class="btn ghost small" id="refreshPreviewBtn">تحديث المعاينة</button>
+</div>
+<div class="preview-wrap" id="previewWrap" style="max-width:1280px"><iframe id="previewFrame" title="معاينة الموقع"></iframe></div>
+</div>
+
+<div id="tab-publish" class="hidden">
+<div class="card">
+<h2 style="margin-top:0">النشر</h2>
+<p class="note">اللوحة لا تنشر بنفسها. عند تنزيل الملف أرسله إلى Muse، وسيرفعه إلى GitHub بعد موافقتك، ثم يتحدث الموقع تلقائيًا على Vercel وGitHub Pages.</p>
+<p id="changeSummary" class="kv"></p>
+<button class="btn" id="downloadBtn">تنزيل index.html للنشر</button>
+</div>
+<div class="card" style="margin-top:14px">
+<h2 style="margin-top:0">أدوات</h2>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<button class="btn ghost" id="exportBtn">تصدير الإعدادات (JSON)</button>
+<button class="btn ghost" id="importBtn">استيراد الإعدادات (JSON)</button>
+<input type="file" id="importFile" accept="application/json,.json" class="hidden">
+<button class="btn danger" id="resetBtn">استعادة نسخة الموقع الحالية</button>
+</div>
+<p class="note">«استعادة نسخة الموقع الحالية» تمسح كل تعديلاتك وتعيد المحتوى والألوان كما هي في الموقع الحي الآن.</p>
+</div>
+<div class="card hist" style="margin-top:14px">
+<h2 style="margin-top:0">سجل التعديلات</h2>
+<p class="note">آخر 10 نسخ محفوظة — يمكنك استعادة أي نسخة منها.</p>
+<div id="historyArea"></div>
+</div>
+</div>
+</section>
+</main>
+<script>
+(function(){
+'use strict';
+/* ================= البيانات المضمّنة ================= */
+var TEMPLATE = "<!DOCTYPE html>\n<html lang=\"ar\" dir=\"rtl\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\">\n<title>شركة عدنان للبناء | مقاولات وحلول رقمية – مسقط، سلطنة عُمان</title>\n<meta name=\"description\" content=\"شركة عدنان للبناء ش.ش.و: مقاولات البناء والتشييد للمباني السكنية وغير السكنية، وتطوير ودعم المواقع والحسابات الإلكترونية. مسقط – سلطنة عُمان.\">\n<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap\">\n<noscript><style>.rv{opacity:1!important;transform:none!important}</style></noscript>\n<style>\n:root{--bg:#f4f5f6;--surface:#fff;--ink:#10263a;--muted:#55646f;--line:#d9dee2;--brand:#10263a;--brand-ink:#fff;--accent:#b9822a;--accent-ink:#fff;--hero-bg:#10263a;--hero-ink:#fff;--hero-muted:#b6c3cd;--grid:rgba(255,255,255,.07);\nbox-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}\n@media (prefers-color-scheme:dark){:root:not([data-theme=\"light\"]){--bg:#0b1722;--surface:#12212e;--ink:#e8edf1;--muted:#9fb0bc;--line:#243646;--brand:#e8edf1;--brand-ink:#10263a;--accent:#d9a043;--accent-ink:#10263a;--hero-bg:#0d1d2b;color-scheme:dark}}\n:root[data-theme=\"dark\"]{--bg:#0b1722;--surface:#12212e;--ink:#e8edf1;--muted:#9fb0bc;--line:#243646;--brand:#e8edf1;--brand-ink:#10263a;--accent:#d9a043;--accent-ink:#10263a;--hero-bg:#0d1d2b;color-scheme:dark}\nhtml{scroll-padding-top:calc(76px + env(safe-area-inset-top,0px));scroll-behavior:smooth}\n*{box-sizing:border-box}\nbody{margin:0;background:var(--bg);color:var(--ink);font-family:\"IBM Plex Sans Arabic\",Tahoma,\"Segoe UI\",sans-serif;line-height:1.8;font-size:17px}\na{color:inherit}\n:focus-visible{outline:3px solid var(--accent);outline-offset:3px}\n.wrap{max-width:1120px;margin:0 auto;padding:0 20px}\nheader{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--hero-bg);color:var(--hero-ink)}\nbody::before{content:\"\";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--hero-bg);z-index:30}\n.nav{display:flex;align-items:center;justify-content:space-between;height:68px;gap:16px}\n.logo{display:flex;align-items:center;gap:12px;text-decoration:none;font-weight:700;font-size:19px}\n.logo i{width:38px;height:38px;background:var(--accent);display:grid;place-items:center;color:var(--accent-ink);font-style:normal;font-weight:700;border-radius:3px}\n.menu{display:flex;gap:26px;font-size:15px}\n.menu a{text-decoration:none;color:var(--hero-muted)}\n.menu a:hover{color:#fff}\n.btn{display:inline-block;padding:12px 26px;background:var(--accent);color:var(--accent-ink);font-weight:600;text-decoration:none;border-radius:3px;border:0;font:inherit;font-weight:600;cursor:pointer}\n.btn.ghost{background:transparent;color:var(--hero-ink);border:1px solid rgba(255,255,255,.35)}\n.hero{background:var(--hero-bg);color:var(--hero-ink);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:48px 48px;padding:84px 0 96px;overflow:hidden}\n.hero .wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:40px;align-items:center}\nh1{font-size:clamp(34px,5.2vw,60px);line-height:1.3;margin:0 0 20px;font-weight:700}\n.hero p{color:var(--hero-muted);max-width:34em;margin:0 0 32px;font-size:18px}\n.hero .cta{display:flex;gap:12px;flex-wrap:wrap}\n.hero svg{width:100%;height:auto;max-height:380px}\n.facts{background:var(--surface);border-bottom:1px solid var(--line)}\n.facts .wrap{display:grid;grid-template-columns:repeat(4,1fr)}\n.facts div{padding:22px 16px;border-inline-start:1px solid var(--line)}\n.facts div:first-child{border-inline-start:0}\n.facts small{display:block;color:var(--muted);font-size:14px}\n.facts strong{font-size:18px}\nsection{padding:84px 0}\nh2{font-size:clamp(26px,3.4vw,38px);margin:0 0 14px;line-height:1.4}\n.lead{color:var(--muted);max-width:40em;margin:0 0 44px}\n.split{display:grid;grid-template-columns:1.25fr 1fr;gap:20px}\n.card{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:34px}\n.card.dark{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}\n.card h3{margin:0 0 8px;font-size:23px}\n.card p{margin:0 0 18px;opacity:.85}\n.card ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}\n.card li{padding-inline-start:22px;position:relative}\n.card li::before{content:\"\";position:absolute;inset-inline-start:0;top:.8em;width:10px;height:2px;background:var(--accent)}\n.about{background:var(--surface);border-block:1px solid var(--line)}\n.about .wrap{display:grid;grid-template-columns:1fr 1fr;gap:56px}\n.about p{margin:0 0 16px;color:var(--muted)}\n.vals{display:grid;gap:0}\n.vals div{padding:18px 0;border-bottom:1px solid var(--line)}\n.vals div:first-child{padding-top:0}\n.vals b{display:block;font-size:18px}\n.vals span{color:var(--muted);font-size:15px}\n.contact .grid{display:grid;grid-template-columns:1fr 1.1fr;gap:20px}\n.info{display:grid;gap:20px}\n.info dt{color:var(--muted);font-size:14px}\n.info dd{margin:0 0 4px;font-weight:600;font-size:18px}\n.info a{text-decoration:none}\n.info a:hover{color:var(--accent)}\nform{display:grid;gap:14px}\nlabel{font-size:14px;color:var(--muted);display:grid;gap:6px}\ninput,textarea{font:inherit;padding:12px 14px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:3px;width:100%}\nfooter{background:var(--hero-bg);color:var(--hero-muted);padding:30px 0;font-size:14px}\nfooter .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}\n@media (max-width:860px){\n.menu{display:none}\n.hero{padding:56px 0 64px}\n.hero .wrap,.split,.about .wrap,.contact .grid{grid-template-columns:1fr}\n.hero svg{max-height:240px}\n.facts .wrap{grid-template-columns:1fr 1fr}\n.facts div:nth-child(3){border-inline-start:0}\n.facts div:nth-child(n+3){border-top:1px solid var(--line)}\nsection{padding:56px 0}\n.card{padding:26px}\n}\n/* ===== Motion (additive only — colors/fonts/shapes untouched) ===== */\n.hl,.rv{opacity:0}\n.hl{transform:translateY(26px);animation:riseIn .9s cubic-bezier(.16,1,.3,1) forwards;animation-delay:var(--d,0s)}\n@keyframes riseIn{to{opacity:1;transform:none}}\n.hero svg .bld{transform:translateY(14px);opacity:0;animation:riseIn .8s cubic-bezier(.16,1,.3,1) forwards;animation-delay:var(--d,0s)}\n.rv{transform:translateY(28px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1);transition-delay:var(--d,0s)}\n.rv.in{opacity:1;transform:none}\n@media (prefers-reduced-motion:reduce){.hl,.rv,.hero svg .bld{opacity:1!important;transform:none!important;animation:none!important;transition:none!important}}\n@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}\n</style>\n</head>\n<body>\n<header>\n<div class=\"wrap nav\">\n<a class=\"logo\" href=\"#top\" aria-label=\"شركة عدنان للبناء\"><i>ع</i><span>عدنان للبناء</span></a>\n<nav class=\"menu\" aria-label=\"التنقل الرئيسي\"><a href=\"#services\">خدماتنا</a><a href=\"#about\">عن الشركة</a><a href=\"#contact\">تواصل معنا</a></nav>\n<a class=\"btn\" href=\"#contact\">اطلب عرض سعر</a>\n</div>\n</header>\n\n<main id=\"top\">\n<div class=\"hero\">\n<div class=\"wrap\">\n<div>\n<h1 class=\"hl\" style=\"--d:.05s\">نبني المباني، ونبني حضوركم الرقمي.</h1>\n<p class=\"hl\" style=\"--d:.18s\">مقاولات بناء وتشييد للمباني السكنية وغير السكنية في سلطنة عُمان، إضافة إلى تطوير ودعم المواقع والحسابات الإلكترونية للشركات.</p>\n<div class=\"cta hl\" style=\"--d:.30s\"><a class=\"btn\" href=\"#contact\">ابدأ مشروعك</a><a class=\"btn ghost\" href=\"#services\">تعرّف على خدماتنا</a></div>\n</div>\n<svg viewBox=\"0 0 400 320\" role=\"img\" aria-label=\"مخطط هندسي لمبنى\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\">\n<g class=\"bld\" style=\"--d:.3s\" stroke=\"#b6c3cd\" opacity=\".55\"><path d=\"M20 290h360\"/><path d=\"M60 290V120h120v170M180 290V60h110v230M290 290V150h60v140\"/><path d=\"M80 150h80M80 190h80M80 230h80M200 100h70M200 140h70M200 180h70M200 220h70\"/></g>\n<g class=\"bld\" style=\"--d:.8s\" stroke=\"#d9a043\" stroke-width=\"2\"><path d=\"M60 120l60-40 60 40M180 60l55-30 55 30\"/><path d=\"M20 306h360M60 296v20M180 296v20M290 296v20M350 296v20\" stroke-dasharray=\"4 4\" opacity=\".7\"/></g>\n</svg>\n</div>\n</div>\n\n<div class=\"facts\"><div class=\"wrap\">\n<div class=\"rv\"><small>الشكل القانوني</small><strong>شركة الشخص الواحد</strong></div>\n<div class=\"rv\" style=\"--d:.08s\"><small>تأسست</small><strong>سبتمبر 2023</strong></div>\n<div class=\"rv\" style=\"--d:.16s\"><small>المقر</small><strong>الخوض، السيب – مسقط</strong></div>\n<div class=\"rv\" style=\"--d:.24s\"><small>السجل التجاري</small><strong>1506977</strong></div>\n</div></div>\n\n<section id=\"services\">\n<div class=\"wrap\">\n<h2 class=\"rv\">خدماتنا</h2>\n<p class=\"lead rv\" style=\"--d:.08s\">نشاطان متكاملان تحت سقف واحد: تنفيذ هندسي على الأرض، وحلول رقمية تُبقي عملك ظاهرًا ومنظّمًا.</p>\n<div class=\"split\">\n<article class=\"card dark rv\" style=\"--d:.15s\">\n<h3>مقاولات البناء والتشييد</h3>\n<p>إنشاءات عامة للمباني السكنية وغير السكنية، من الأساسات حتى التسليم.</p>\n<ul><li>بناء المباني السكنية: فلل وعمارات</li><li>بناء المباني التجارية والإدارية</li><li>تنفيذ الهياكل والتشطيبات</li><li>متابعة المشروع وتسليمه</li></ul>\n</article>\n<article class=\"card rv\" style=\"--d:.25s\">\n<h3>الحلول الرقمية</h3>\n<p>تطوير ودعم المواقع والحسابات الإلكترونية للشركات والأفراد.</p>\n<ul><li>تصميم وتطوير المواقع الإلكترونية</li><li>إعداد وإدارة الحسابات الإلكترونية</li><li>الدعم الفني والصيانة المستمرة</li></ul>\n</article>\n</div>\n</div>\n</section>\n\n<section id=\"about\" class=\"about\">\n<div class=\"wrap\">\n<div>\n<h2 class=\"rv\">عن الشركة</h2>\n<p class=\"rv\" style=\"--d:.08s\">شركة عدنان للبناء شركة شخص واحد مسجّلة في سلطنة عُمان منذ عام 2023، ومقرها منطقة الخوض في ولاية السيب بمحافظة مسقط، ولها فرع ميداني في العامرات.</p>\n<p class=\"rv\" style=\"--d:.16s\">نعمل بترخيص رسمي في مقاولات البناء والتشييد، ونوسّع خدماتنا لتشمل الجانب الرقمي لعملائنا.</p>\n</div>\n<div class=\"vals\">\n<div class=\"rv\" style=\"--d:.1s\"><b>ترخيص ساري</b><span>سجل تجاري نشط حتى سبتمبر 2029.</span></div>\n<div class=\"rv\" style=\"--d:.2s\"><b>حضور في مسقط</b><span>مقر في السيب وفرع نشاط في العامرات.</span></div>\n<div class=\"rv\" style=\"--d:.3s\"><b>تواصل مباشر</b><span>تتعامل مباشرة مع صاحب الشركة دون وسطاء.</span></div>\n</div>\n</div>\n</section>\n\n<section id=\"contact\" class=\"contact\">\n<div class=\"wrap\">\n<h2 class=\"rv\">تواصل معنا</h2>\n<p class=\"lead rv\" style=\"--d:.08s\">أرسل لنا تفاصيل مشروعك وسنعود إليك بأقرب وقت.</p>\n<div class=\"grid\">\n<dl class=\"info card rv\" style=\"--d:.15s\">\n<div><dt>الهاتف / واتساب</dt><dd><a href=\"tel:+96879487544\" dir=\"ltr\">+968 7948 7544</a></dd></div>\n<div><dt>البريد الإلكتروني</dt><dd><a href=\"mailto:bieabz@yahoo.fr\">bieabz@yahoo.fr</a></dd></div>\n<div><dt>العنوان</dt><dd>الخوض، السيب – محافظة مسقط، سلطنة عُمان</dd></div>\n<div><dt>صندوق البريد</dt><dd>ص.ب 60، الرمز البريدي 132</dd></div>\n</dl>\n<form class=\"card rv\" id=\"f\" style=\"--d:.25s\">\n<label>الاسم<input name=\"n\" required autocomplete=\"name\"></label>\n<label>رقم الهاتف<input name=\"p\" type=\"tel\" dir=\"ltr\" autocomplete=\"tel\"></label>\n<label>تفاصيل الطلب<textarea name=\"m\" rows=\"4\" required></textarea></label>\n<button class=\"btn\" type=\"submit\">إرسال الطلب</button>\n</form>\n</div>\n</div>\n</section>\n</main>\n\n<footer><div class=\"wrap\"><span>© 2026 شركة عدنان للبناء ش.ش.و – جميع الحقوق محفوظة</span><span>سجل تجاري: 1506977</span></div></footer>\n\n<script>\ndocument.getElementById('f').addEventListener('submit',function(e){\ne.preventDefault();var d=new FormData(this);\nvar b='الاسم: '+d.get('n')+'\\nالهاتف: '+d.get('p')+'\\n\\n'+d.get('m');\nlocation.href='mailto:bieabz@yahoo.fr?subject='+encodeURIComponent('طلب جديد من الموقع')+'&body='+encodeURIComponent(b);\n});\n<\/script>\n<script>\n(function(){\nvar reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;\nvar els=document.querySelectorAll('.rv');\nif(!('IntersectionObserver' in window)||reduce){els.forEach(function(e){e.classList.add('in')});}\nelse{var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target)}})},{threshold:.12,rootMargin:'0px 0px -8% 0px'});els.forEach(function(e){io.observe(e)})}\nvar svg=document.querySelector('.hero svg');\nif(!svg||reduce)return;\nvar paths=svg.querySelectorAll('path'),t0=400;\npaths.forEach(function(p,i){\nvar len=0;try{len=p.getTotalLength()}catch(e){}\nif(!len)return;\np.style.strokeDasharray=len;p.style.strokeDashoffset=len;p.getBoundingClientRect();\np.style.transition='stroke-dashoffset 1s cubic-bezier(.16,1,.3,1) '+(t0+i*110)+'ms';\nrequestAnimationFrame(function(){p.style.strokeDashoffset='0'});\n});\n})();\n<\/script>\n</body>\n</html>\n";
+var ORIG_UL0 = "<ul><li>بناء المباني السكنية: فلل وعمارات</li><li>بناء المباني التجارية والإدارية</li><li>تنفيذ الهياكل والتشطيبات</li><li>متابعة المشروع وتسليمه</li></ul>";
+var ORIG_UL1 = "<ul><li>تصميم وتطوير المواقع الإلكترونية</li><li>إعداد وإدارة الحسابات الإلكترونية</li><li>الدعم الفني والصيانة المستمرة</li></ul>";
+var SEED = {
+ header:{logoLetter:'ع',brandName:'عدنان للبناء',navServices:'خدماتنا',navAbout:'عن الشركة',navContact:'تواصل معنا',ctaLabel:'اطلب عرض سعر'},
+ hero:{title:'نبني المباني، ونبني حضوركم الرقمي.',text:'مقاولات بناء وتشييد للمباني السكنية وغير السكنية في سلطنة عُمان، إضافة إلى تطوير ودعم المواقع والحسابات الإلكترونية للشركات.',ctaPrimary:'ابدأ مشروعك',ctaSecondary:'تعرّف على خدماتنا'},
+ facts:[
+  {label:'الشكل القانوني',value:'شركة الشخص الواحد'},
+  {label:'تأسست',value:'سبتمبر 2023'},
+  {label:'المقر',value:'الخوض، السيب – مسقط'},
+  {label:'السجل التجاري',value:'1506977'}],
+ services:{title:'خدماتنا',lead:'نشاطان متكاملان تحت سقف واحد: تنفيذ هندسي على الأرض، وحلول رقمية تُبقي عملك ظاهرًا ومنظّمًا.',cards:[
+  {title:'مقاولات البناء والتشييد',text:'إنشاءات عامة للمباني السكنية وغير السكنية، من الأساسات حتى التسليم.',dark:true,items:['بناء المباني السكنية: فلل وعمارات','بناء المباني التجارية والإدارية','تنفيذ الهياكل والتشطيبات','متابعة المشروع وتسليمه']},
+  {title:'الحلول الرقمية',text:'تطوير ودعم المواقع والحسابات الإلكترونية للشركات والأفراد.',dark:false,items:['تصميم وتطوير المواقع الإلكترونية','إعداد وإدارة الحسابات الإلكترونية','الدعم الفني والصيانة المستمرة']}]},
+ about:{title:'عن الشركة',paragraphs:['شركة عدنان للبناء شركة شخص واحد مسجّلة في سلطنة عُمان منذ عام 2023، ومقرها منطقة الخوض في ولاية السيب بمحافظة مسقط، ولها فرع ميداني في العامرات.','نعمل بترخيص رسمي في مقاولات البناء والتشييد، ونوسّع خدماتنا لتشمل الجانب الرقمي لعملائنا.'],values:[
+  {title:'ترخيص ساري',text:'سجل تجاري نشط حتى سبتمبر 2029.'},
+  {title:'حضور في مسقط',text:'مقر في السيب وفرع نشاط في العامرات.'},
+  {title:'تواصل مباشر',text:'تتعامل مباشرة مع صاحب الشركة دون وسطاء.'}]},
+ contact:{title:'تواصل معنا',lead:'أرسل لنا تفاصيل مشروعك وسنعود إليك بأقرب وقت.',
+  info:[
+   {label:'الهاتف / واتساب',value:'+968 7948 7544',kind:'phone'},
+   {label:'البريد الإلكتروني',value:'bieabz@yahoo.fr',kind:'email'},
+   {label:'العنوان',value:'الخوض، السيب – محافظة مسقط، سلطنة عُمان',kind:'text'},
+   {label:'صندوق البريد',value:'ص.ب 60، الرمز البريدي 132',kind:'text'}],
+  phoneHref:'+96879487544',
+  formName:'الاسم',formPhone:'رقم الهاتف',formDetails:'تفاصيل الطلب',formSubmit:'إرسال الطلب'},
+ footer:{rights:'© 2026 شركة عدنان للبناء ش.ش.و – جميع الحقوق محفوظة',cr:'سجل تجاري: 1506977'},
+ theme:{bg:'#f4f5f6',surface:'#fff',ink:'#10263a',muted:'#55646f',line:'#d9dee2',brand:'#10263a',brandInk:'#fff',accent:'#b9822a',accentInk:'#fff',heroBg:'#10263a',heroInk:'#fff',heroMuted:'#b6c3cd'},
+ sectionColors:{header:{bg:null,text:null},hero:{bg:null,text:null},facts:{bg:null,text:null},services:{bg:null,text:null},about:{bg:null,text:null},contact:{bg:null,text:null},footer:{bg:null,text:null}}
+};
+/* ================= الثوابت ================= */
+var LS_CFG='adnan-admin-config-v1', LS_HASH='adnan-admin-pass-hash', LS_FAILS='adnan-admin-fails', LS_LOCK='adnan-admin-lockuntil', LS_HIST='adnan-admin-history-v1';
+var SS_SESS='adnan-admin-session';
+var MAX_FAILS=5, LOCK_MS=10*60*1000;
+var FACT_PREFIX=['<div class="rv">','<div class="rv" style="--d:.08s">','<div class="rv" style="--d:.16s">','<div class="rv" style="--d:.24s">'];
+var VAL_PREFIX=['<div class="rv" style="--d:.1s">','<div class="rv" style="--d:.2s">','<div class="rv" style="--d:.3s">'];
+var THEME_VARS=[
+ ['bg','--bg','لون خلفية الصفحة'],
+ ['surface','--surface','لون البطاقات'],
+ ['ink','--ink','لون النص الأساسي'],
+ ['muted','--muted','لون النص الباهت'],
+ ['line','--line','لون الخطوط الفاصلة'],
+ ['brand','--brand','لون الكتل الداكنة'],
+ ['brandInk','--brand-ink','لون النص على الكتل الداكنة'],
+ ['accent','--accent','لون التمييز (الذهبي)'],
+ ['accentInk','--accent-ink','لون النص على الذهبي'],
+ ['heroBg','--hero-bg','خلفية قسم البطل'],
+ ['heroInk','--hero-ink','نص قسم البطل'],
+ ['heroMuted','--hero-muted','النص الباهت في قسم البطل']];
+var SECTION_SELECTORS={header:'header',hero:'.hero',facts:'.facts',services:'#services',about:'#about',contact:'#contact',footer:'footer'};
+var SECTION_LABELS={header:'الترويسة',hero:'قسم البطل',facts:'شريط الحقائق',services:'خدماتنا',about:'عن الشركة',contact:'تواصل معنا',footer:'التذييل'};
+var LAST_SEARCHES=[];
+/* ================= أدوات نصية ================= */
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function escEmail(s){return String(s==null?'':s).replace(/[<>"'&\s]/g,'');}
+function repOnce(h,search,repl){LAST_SEARCHES.push(search);var i=h.indexOf(search);if(i<0)return h;return h.slice(0,i)+repl+h.slice(i+search.length);}
+function repAll(h,search,repl){LAST_SEARCHES.push(search);return h.split(search).join(repl);}
+function buildUl(items){return '<ul>'+items.map(function(it){return '<li>'+esc(it)+'</li>';}).join('')+'</ul>';}
+function clone(o){return JSON.parse(JSON.stringify(o));}
+function $(id){return document.getElementById(id);}
+/* ================= توليد الموقع ================= */
+function generateSite(c){
+  LAST_SEARCHES=[];
+  var h=TEMPLATE;
+  /* الترويسة */
+  h=repOnce(h,'<i>ع</i>','<i>'+esc(c.header.logoLetter)+'</i>');
+  h=repOnce(h,'<span>عدنان للبناء</span>','<span>'+esc(c.header.brandName)+'</span>');
+  h=repOnce(h,'<a href="#services">خدماتنا</a>','<a href="#services">'+esc(c.header.navServices)+'</a>');
+  h=repOnce(h,'<a href="#about">عن الشركة</a>','<a href="#about">'+esc(c.header.navAbout)+'</a>');
+  h=repOnce(h,'<a href="#contact">تواصل معنا</a>','<a href="#contact">'+esc(c.header.navContact)+'</a>');
+  h=repOnce(h,'<a class="btn" href="#contact">اطلب عرض سعر</a>','<a class="btn" href="#contact">'+esc(c.header.ctaLabel)+'</a>');
+  /* البطل */
+  h=repOnce(h,'<h1 class="hl" style="--d:.05s">نبني المباني، ونبني حضوركم الرقمي.</h1>','<h1 class="hl" style="--d:.05s">'+esc(c.hero.title)+'</h1>');
+  h=repOnce(h,'<p class="hl" style="--d:.18s">مقاولات بناء وتشييد للمباني السكنية وغير السكنية في سلطنة عُمان، إضافة إلى تطوير ودعم المواقع والحسابات الإلكترونية للشركات.</p>','<p class="hl" style="--d:.18s">'+esc(c.hero.text)+'</p>');
+  h=repOnce(h,'<a class="btn" href="#contact">ابدأ مشروعك</a>','<a class="btn" href="#contact">'+esc(c.hero.ctaPrimary)+'</a>');
+  h=repOnce(h,'<a class="btn ghost" href="#services">تعرّف على خدماتنا</a>','<a class="btn ghost" href="#services">'+esc(c.hero.ctaSecondary)+'</a>');
+  /* الحقائق */
+  for(var i=0;i<4;i++){
+    var f=c.facts[i], s=SEED.facts[i];
+    h=repOnce(h,FACT_PREFIX[i]+'<small>'+s.label+'</small><strong>'+s.value+'</strong></div>',
+      FACT_PREFIX[i]+'<small>'+esc(f.label)+'</small><strong>'+esc(f.value)+'</strong></div>');
+  }
+  /* الخدمات */
+  h=repOnce(h,'<h2 class="rv">خدماتنا</h2>','<h2 class="rv">'+esc(c.services.title)+'</h2>');
+  h=repOnce(h,'<p class="lead rv" style="--d:.08s">'+SEED.services.lead+'</p>','<p class="lead rv" style="--d:.08s">'+esc(c.services.lead)+'</p>');
+  for(var j=0;j<2;j++){
+    var card=c.services.cards[j], sc=SEED.services.cards[j];
+    h=repOnce(h,'<h3>'+sc.title+'</h3>','<h3>'+esc(card.title)+'</h3>');
+    h=repOnce(h,'<p>'+sc.text+'</p>','<p>'+esc(card.text)+'</p>');
+    h=repOnce(h,j===0?ORIG_UL0:ORIG_UL1,buildUl(card.items));
+  }
+  /* عن الشركة */
+  h=repOnce(h,'<h2 class="rv">عن الشركة</h2>','<h2 class="rv">'+esc(c.about.title)+'</h2>');
+  h=repOnce(h,'<p class="rv" style="--d:.08s">'+SEED.about.paragraphs[0]+'</p>','<p class="rv" style="--d:.08s">'+esc(c.about.paragraphs[0])+'</p>');
+  h=repOnce(h,'<p class="rv" style="--d:.16s">'+SEED.about.paragraphs[1]+'</p>','<p class="rv" style="--d:.16s">'+esc(c.about.paragraphs[1])+'</p>');
+  for(var k=0;k<3;k++){
+    var v=c.about.values[k], sv=SEED.about.values[k];
+    h=repOnce(h,VAL_PREFIX[k]+'<b>'+sv.title+'</b><span>'+sv.text+'</span></div>',
+      VAL_PREFIX[k]+'<b>'+esc(v.title)+'</b><span>'+esc(v.text)+'</span></div>');
+  }
+  /* التواصل */
+  h=repOnce(h,'<h2 class="rv">تواصل معنا</h2>','<h2 class="rv">'+esc(c.contact.title)+'</h2>');
+  h=repOnce(h,'<p class="lead rv" style="--d:.08s">'+SEED.contact.lead+'</p>','<p class="lead rv" style="--d:.08s">'+esc(c.contact.lead)+'</p>');
+  for(var m=0;m<4;m++){
+    var inf=c.contact.info[m], sinf=SEED.contact.info[m];
+    h=repOnce(h,infoDiv(sinf,c.contact.phoneHref),infoDiv(inf,c.contact.phoneHref));
+  }
+  /* البريد يظهر أيضًا في سكربت النموذج — نحدّثه مع الحقول */
+  h=repAll(h,'bieabz@yahoo.fr',escEmail(c.contact.info[1].value));
+  h=repOnce(h,'<label>الاسم<input','<label>'+esc(c.contact.formName)+'<input');
+  h=repOnce(h,'<label>رقم الهاتف<input','<label>'+esc(c.contact.formPhone)+'<input');
+  h=repOnce(h,'<label>تفاصيل الطلب<textarea','<label>'+esc(c.contact.formDetails)+'<textarea');
+  h=repOnce(h,'>إرسال الطلب</button>','>'+esc(c.contact.formSubmit)+'</button>');
+  /* التذييل */
+  h=repOnce(h,'<span>'+SEED.footer.rights+'</span>','<span>'+esc(c.footer.rights)+'</span>');
+  h=repOnce(h,'<span>'+SEED.footer.cr+'</span>','<span>'+esc(c.footer.cr)+'</span>');
+  /* الألوان — أول كتلة :root فقط */
+  var rs=h.indexOf(':root{');
+  if(rs>=0){
+    var re=h.indexOf('}',rs);
+    if(re>rs){
+      var block=h.slice(rs,re+1), nb=block;
+      THEME_VARS.forEach(function(p){
+        nb=repOnce(nb,p[1]+':'+SEED.theme[p[0]]+';',p[1]+':'+c.theme[p[0]]+';');
+      });
+      h=h.slice(0,rs)+nb+h.slice(re+1);
+    }
+  }
+  /* تخصيص كل قسم — كتلة إضافية قبل إغلاق <style> الأخير فقط عند وجود تخصيص */
+  var rules=[];
+  Object.keys(SECTION_SELECTORS).forEach(function(sec){
+    var o=c.sectionColors[sec]; if(!o) return;
+    var decls=[];
+    if(o.bg) decls.push('background:'+o.bg);
+    if(o.text) decls.push('color:'+o.text);
+    if(decls.length) rules.push(SECTION_SELECTORS[sec]+'{'+decls.join(';')+'}');
+  });
+  if(rules.length){
+    var ins='\n/* تخصيص لوحة التحكم */\n'+rules.join('\n')+'\n';
+    var li=h.lastIndexOf('</style>');
+    if(li>=0) h=h.slice(0,li)+ins+h.slice(li);
+  }
+  return h;
+}
+function infoDiv(inf,phoneHref){
+  if(inf.kind==='phone') return '<div><dt>'+esc(inf.label)+'</dt><dd><a href="tel:'+esc(phoneHref)+'" dir="ltr">'+esc(inf.value)+'</a></dd></div>';
+  if(inf.kind==='email') return '<div><dt>'+esc(inf.label)+'</dt><dd><a href="mailto:'+escEmail(inf.value)+'">'+escEmail(inf.value)+'</a></dd></div>';
+  return '<div><dt>'+esc(inf.label)+'</dt><dd>'+esc(inf.value)+'</dd></div>';
+}
+
+/* ================= الحالة والتخزين ================= */
+var cfg=loadCfg();
+var saveTimer=null, previewTimer=null, lockTimer=null;
+function validCfg(o){
+  try{
+    return o && o.header && typeof o.hero.title==='string' && Array.isArray(o.facts) && o.facts.length===4
+      && o.services && Array.isArray(o.services.cards) && o.services.cards.length===2
+      && o.about && Array.isArray(o.about.values) && o.about.values.length===3
+      && o.contact && Array.isArray(o.contact.info) && o.contact.info.length===4
+      && o.footer && o.theme && o.sectionColors;
+  }catch(e){return false;}
+}
+function loadCfg(){
+  try{
+    var raw=localStorage.getItem(LS_CFG);
+    if(raw){var o=JSON.parse(raw); if(validCfg(o)) return o;}
+  }catch(e){}
+  return clone(SEED);
+}
+function persist(){
+  try{localStorage.setItem(LS_CFG,JSON.stringify(cfg));}catch(e){}
+  pushHistory();
+  renderSummary();
+}
+function scheduleSave(){
+  $('savedNote').textContent='جارٍ الحفظ…';
+  if(saveTimer) clearTimeout(saveTimer);
+  saveTimer=setTimeout(function(){
+    persist();
+    $('savedNote').textContent='تم الحفظ تلقائيًا في هذا المتصفح.';
+  },400);
+  if(previewTimer) clearTimeout(previewTimer);
+  previewTimer=setTimeout(updatePreview,300);
+}
+function flush(){
+  if(saveTimer){clearTimeout(saveTimer);saveTimer=null;}
+  if(previewTimer){clearTimeout(previewTimer);previewTimer=null;}
+  persist();
+  updatePreview();
+}
+function loadHistory(){
+  try{var h=JSON.parse(localStorage.getItem(LS_HIST)||'[]');return Array.isArray(h)?h:[];}catch(e){return [];}
+}
+function pushHistory(){
+  var h=loadHistory();
+  var s=JSON.stringify(cfg);
+  if(h.length && h[h.length-1].s===s) return;
+  h.push({t:Date.now(),s:s});
+  while(h.length>10) h.shift();
+  try{localStorage.setItem(LS_HIST,JSON.stringify(h));}catch(e){}
+  renderHistory();
+}
+function restoreHistory(idx){
+  var h=loadHistory();
+  if(!h[idx]) return;
+  try{
+    var o=JSON.parse(h[idx].s);
+    if(!validCfg(o)) return;
+    cfg=o; persist(); renderAll();
+  }catch(e){}
+}
+function countChanges(){
+  var n=0;
+  (function walk(a,b){
+    if(typeof a!==typeof b){n++;return;}
+    if(a&&b&&typeof a==='object'){
+      var keys={}; Object.keys(a).forEach(function(k){keys[k]=1;}); Object.keys(b).forEach(function(k){keys[k]=1;});
+      Object.keys(keys).forEach(function(k){walk(a[k],b[k]);});
+    }else if(a!==b){n++;}
+  })(cfg,SEED);
+  return n;
+}
+function renderSummary(){
+  var el=$('changeSummary'); if(!el) return;
+  var n=countChanges();
+  el.textContent=n===0?'لا توجد تغييرات عن نسخة الموقع الحالية.':'عدد الحقول والألوان المعدّلة عن نسخة الموقع الحالية: '+n+'.';
+}
+function renderHistory(){
+  var el=$('historyArea'); if(!el) return;
+  var h=loadHistory();
+  if(!h.length){el.innerHTML='<p class="kv">لا توجد نسخ محفوظة بعد.</p>';return;}
+  el.innerHTML=h.map(function(it,i){
+    var d=new Date(it.t);
+    var label=d.toLocaleDateString('ar',{day:'numeric',month:'long'})+' — '+d.toLocaleTimeString('ar',{hour:'2-digit',minute:'2-digit'});
+    return '<div class="kv" style="padding:6px 0;border-bottom:1px solid #eef1f3">نسخة '+label+'<button class="mini-btn" data-restore="'+i+'">استعادة</button></div>';
+  }).join('');
+}
+/* ================= المصادقة ================= */
+function sha256hex(str){
+  if(!(window.crypto&&window.crypto.subtle)) return Promise.reject(new Error('no-subtle'));
+  return window.crypto.subtle.digest('SHA-256',new TextEncoder().encode(str)).then(function(buf){
+    return Array.prototype.map.call(new Uint8Array(buf),function(b){return ('0'+b.toString(16)).slice(-2);}).join('');
+  });
+}
+function fails(){return parseInt(localStorage.getItem(LS_FAILS)||'0',10)||0;}
+function lockUntil(){return parseInt(localStorage.getItem(LS_LOCK)||'0',10)||0;}
+function isLocked(){return Date.now()<lockUntil();}
+function showGate(which){
+  $('gate').classList.remove('hidden');
+  $('app').classList.add('hidden');
+  $('logoutBtn').classList.add('hidden');
+  $('setupForm').classList.toggle('hidden',which!=='setup');
+  $('loginForm').classList.toggle('hidden',which!=='login');
+  $('gateErr').textContent='';
+  if(which==='login') refreshLockState();
+}
+function showApp(){
+  $('gate').classList.add('hidden');
+  $('app').classList.remove('hidden');
+  $('logoutBtn').classList.remove('hidden');
+  renderAll();
+}
+function refreshLockState(){
+  var btn=$('loginBtn'), msg=$('lockMsg'), err=$('loginErr');
+  if(isLocked()){
+    var remain=Math.ceil((lockUntil()-Date.now())/1000);
+    var mm=Math.floor(remain/60), ss=remain%60;
+    msg.classList.remove('hidden');
+    msg.textContent='تم قفل الدخول مؤقتًا بعد محاولات خاطئة. حاول مجددًا بعد '+mm+' دقيقة و'+ss+' ثانية.';
+    btn.disabled=true;
+    if(!lockTimer) lockTimer=setInterval(function(){
+      if(!isLocked()){clearInterval(lockTimer);lockTimer=null;msg.classList.add('hidden');btn.disabled=false;err.textContent='';}
+      else refreshLockState();
+    },1000);
+  }else{
+    msg.classList.add('hidden');
+    btn.disabled=false;
+    if(lockTimer){clearInterval(lockTimer);lockTimer=null;}
+  }
+}
+function handleSetup(e){
+  e.preventDefault();
+  var p=$('setupPass').value, p2=$('setupPass2').value, err=$('setupErr');
+  err.textContent='';
+  if(p.length<8){err.textContent='كلمة المرور يجب أن تكون 8 أحرف على الأقل.';return;}
+  if(p!==p2){err.textContent='كلمتا المرور غير متطابقتين.';return;}
+  sha256hex(p).then(function(hash){
+    try{localStorage.setItem(LS_HASH,hash);}catch(ex){}
+    try{localStorage.removeItem(LS_FAILS);localStorage.removeItem(LS_LOCK);}catch(ex2){}
+    try{sessionStorage.setItem(SS_SESS,'1');}catch(ex3){}
+    showApp();
+  }).catch(function(){err.textContent='هذا المتصفح لا يدعم التشفير المطلوب (SHA-256). جرّب متصفحًا حديثًا.';});
+}
+function handleLogin(e){
+  e.preventDefault();
+  var err=$('loginErr');
+  err.textContent='';
+  if(isLocked()){refreshLockState();return;}
+  var user=$('loginUser').value.trim();
+  var pass=$('loginPass').value;
+  if(user!=='admin'){err.textContent='اسم المستخدم غير صحيح.';return;}
+  sha256hex(pass).then(function(hash){
+    var stored=null;
+    try{stored=localStorage.getItem(LS_HASH);}catch(ex){}
+    if(stored && hash===stored){
+      try{localStorage.setItem(LS_FAILS,'0');localStorage.removeItem(LS_LOCK);}catch(ex2){}
+      try{sessionStorage.setItem(SS_SESS,'1');}catch(ex3){}
+      showApp();
+    }else{
+      var f=fails()+1;
+      try{localStorage.setItem(LS_FAILS,String(f));}catch(ex4){}
+      if(f>=MAX_FAILS){
+        try{localStorage.setItem(LS_LOCK,String(Date.now()+LOCK_MS));localStorage.setItem(LS_FAILS,'0');}catch(ex5){}
+        err.textContent='محاولات خاطئة كثيرة. تم قفل الدخول لمدة 10 دقائق.';
+        refreshLockState();
+      }else{
+        err.textContent='كلمة المرور غير صحيحة. (محاولة '+f+' من '+MAX_FAILS+')';
+      }
+    }
+  }).catch(function(){err.textContent='هذا المتصفح لا يدعم التشفير المطلوب (SHA-256). جرّب متصفحًا حديثًا.';});
+}
+function handleLogout(){
+  try{sessionStorage.removeItem(SS_SESS);}catch(e){}
+  $('loginPass').value='';
+  showGate('login');
+}
+
+/* ================= المحررات ================= */
+function getPath(obj,path){
+  var parts=path.split('.'), cur=obj;
+  for(var i=0;i<parts.length;i++){if(cur==null)return undefined;cur=cur[parts[i]];}
+  return cur;
+}
+function setPath(obj,path,value){
+  var parts=path.split('.'), cur=obj;
+  for(var i=0;i<parts.length-1;i++){cur=cur[parts[i]];}
+  cur[parts[parts.length-1]]=value;
+}
+function fieldHtml(label,path,type){
+  var v=getPath(cfg,path);
+  if(type==='textarea') return '<div class="field"><span>'+esc(label)+'</span><textarea data-path="'+path+'">'+esc(v)+'</textarea></div>';
+  return '<div class="field"><span>'+esc(label)+'</span><input type="text" data-path="'+path+'" value="'+esc(v)+'"></div>';
+}
+function renderEditor(sec){
+  var el=$('editorArea'), html='';
+  if(sec==='header'){
+    html='<h3>الترويسة</h3>'
+      +fieldHtml('حرف الشعار','header.logoLetter','text')
+      +fieldHtml('اسم العلامة','header.brandName','text')
+      +fieldHtml('رابط القائمة: خدماتنا','header.navServices','text')
+      +fieldHtml('رابط القائمة: عن الشركة','header.navAbout','text')
+      +fieldHtml('رابط القائمة: تواصل معنا','header.navContact','text')
+      +fieldHtml('نص زر الترويسة','header.ctaLabel','text');
+  }else if(sec==='hero'){
+    html='<h3>قسم البطل</h3>'
+      +fieldHtml('العنوان الرئيسي','hero.title','textarea')
+      +fieldHtml('الفقرة','hero.text','textarea')
+      +fieldHtml('نص الزر الأول','hero.ctaPrimary','text')
+      +fieldHtml('نص الزر الثاني','hero.ctaSecondary','text');
+  }else if(sec==='facts'){
+    html='<h3>شريط الحقائق</h3>';
+    for(var i=0;i<4;i++){
+      html+='<div class="list-item"><div class="row">'
+        +fieldHtml('العنوان '+(i+1),'facts.'+i+'.label','text')
+        +fieldHtml('القيمة '+(i+1),'facts.'+i+'.value','text')
+        +'</div></div>';
+    }
+  }else if(sec==='services'){
+    html='<h3>خدماتنا</h3>'
+      +fieldHtml('عنوان القسم','services.title','text')
+      +fieldHtml('الفقرة التمهيدية','services.lead','textarea');
+    for(var c=0;c<2;c++){
+      html+='<div class="list-item"><h4 style="margin:0 0 10px">البطاقة '+(c+1)+'</h4>'
+        +fieldHtml('عنوان البطاقة','services.cards.'+c+'.title','text')
+        +fieldHtml('وصف البطاقة','services.cards.'+c+'.text','textarea')
+        +'<span>بنود البطاقة</span>';
+      for(var b=0;b<cfg.services.cards[c].items.length;b++){
+        html+='<div class="row" style="display:flex;gap:6px;margin-bottom:6px"><input type="text" style="flex:1" data-path="services.cards.'+c+'.items.'+b+'" value="'+esc(cfg.services.cards[c].items[b])+'">'
+          +'<button class="mini-btn" data-move="up" data-card="'+c+'" data-idx="'+b+'"'+(b===0?' disabled':'')+'>↑</button>'
+          +'<button class="mini-btn" data-move="down" data-card="'+c+'" data-idx="'+b+'"'+(b===cfg.services.cards[c].items.length-1?' disabled':'')+'>↓</button>'
+          +'<button class="mini-btn" data-del-item="'+c+'" data-idx="'+b+'">حذف</button></div>';
+      }
+      html+='<button class="mini-btn" data-add-item="'+c+'">+ إضافة بند</button></div>';
+    }
+  }else if(sec==='about'){
+    html='<h3>عن الشركة</h3>'
+      +fieldHtml('عنوان القسم','about.title','text')
+      +fieldHtml('الفقرة الأولى','about.paragraphs.0','textarea')
+      +fieldHtml('الفقرة الثانية','about.paragraphs.1','textarea')
+      +'<span>القيم</span>';
+    for(var v=0;v<3;v++){
+      html+='<div class="list-item"><div class="row">'
+        +fieldHtml('عنوان القيمة '+(v+1),'about.values.'+v+'.title','text')
+        +fieldHtml('نص القيمة '+(v+1),'about.values.'+v+'.text','text')
+        +'</div></div>';
+    }
+  }else if(sec==='contact'){
+    html='<h3>تواصل معنا</h3>'
+      +fieldHtml('عنوان القسم','contact.title','text')
+      +fieldHtml('الفقرة التمهيدية','contact.lead','textarea');
+    for(var m=0;m<4;m++){
+      html+='<div class="list-item"><div class="row">'
+        +fieldHtml('عنوان البيان '+(m+1),'contact.info.'+m+'.label','text')
+        +fieldHtml('قيمة البيان '+(m+1),'contact.info.'+m+'.value','text')
+        +'</div></div>';
+    }
+    html+=fieldHtml('رابط الهاتف (tel:)','contact.phoneHref','text')
+      +fieldHtml('تسمية حقل الاسم','contact.formName','text')
+      +fieldHtml('تسمية حقل رقم الهاتف','contact.formPhone','text')
+      +fieldHtml('تسمية حقل تفاصيل الطلب','contact.formDetails','text')
+      +fieldHtml('نص زر الإرسال','contact.formSubmit','text');
+  }else if(sec==='footer'){
+    html='<h3>التذييل</h3>'
+      +fieldHtml('السطر الأول','footer.rights','text')
+      +fieldHtml('السطر الثاني','footer.cr','text');
+  }
+  el.innerHTML=html;
+}
+function expandHex(h){
+  h=String(h||'').trim().toLowerCase();
+  var m=/^#([0-9a-f]{3})$/.exec(h);
+  if(m) return '#'+m[1][0]+m[1][0]+m[1][1]+m[1][1]+m[1][2]+m[1][2];
+  if(/^#[0-9a-f]{6}$/.test(h)) return h;
+  return null;
+}
+function renderTheme(){
+  var el=$('themeArea');
+  el.innerHTML=THEME_VARS.map(function(p){
+    var v=cfg.theme[p[0]];
+    return '<div class="theme-row"><span class="tlabel">'+esc(p[2])+' <span class="kv" dir="ltr">'+esc(p[1])+'</span></span>'
+      +'<input type="color" data-theme="'+p[0]+'" value="'+esc(expandHex(v)||'#000000')+'">'
+      +'<input type="text" data-theme-hex="'+p[0]+'" value="'+esc(v)+'" dir="ltr" maxlength="7"></div>';
+  }).join('');
+  var sc=$('sectionColorsArea');
+  sc.innerHTML=Object.keys(SECTION_SELECTORS).map(function(sec){
+    var o=cfg.sectionColors[sec]||{bg:null,text:null};
+    return '<div class="sc-row"><div class="sc-head">'+esc(SECTION_LABELS[sec])+'</div><div class="sc-fields">'
+      +'<label><input type="checkbox" data-sc-bg-check="'+sec+'"'+(o.bg?' checked':'')+'> تخصيص الخلفية</label>'
+      +'<input type="color" data-sc-bg="'+sec+'" value="'+esc(expandHex(o.bg)||'#ffffff')+'"'+(o.bg?'':' disabled')+'>'
+      +'<label><input type="checkbox" data-sc-text-check="'+sec+'"'+(o.text?' checked':'')+'> تخصيص النص</label>'
+      +'<input type="color" data-sc-text="'+sec+'" value="'+esc(expandHex(o.text)||'#000000')+'"'+(o.text?'':' disabled')+'>'
+      +'</div></div>';
+  }).join('');
+}
+function renderAll(){
+  renderEditor($('sectionSelect').value);
+  renderTheme();
+  renderHistory();
+  renderSummary();
+  updatePreview();
+}
+/* ================= المعاينة ================= */
+function updatePreview(){
+  var f=$('previewFrame');
+  if(f) f.srcdoc=generateSite(cfg);
+}
+function setPreviewWidth(w){
+  $('previewWrap').style.maxWidth=w+'px';
+  document.querySelectorAll('.preview-bar .wbtn').forEach(function(b){
+    b.classList.toggle('active',b.getAttribute('data-w')===String(w));
+  });
+}
+
+/* ================= النشر والأدوات ================= */
+function buildDownloadBlob(){
+  return new Blob([generateSite(cfg)],{type:'text/html;charset=utf-8'});
+}
+function downloadSite(){
+  try{
+    var blob=buildDownloadBlob();
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='index.html';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function(){try{URL.revokeObjectURL(a.href);}catch(e){} a.remove();},1000);
+  }catch(e){
+    alert('تعذّر التنزيل في هذا المتصفح. جرّب متصفحًا آخر.');
+  }
+}
+function downloadTextFile(name,text,type){
+  try{
+    var blob=new Blob([text],{type:type||'application/json;charset=utf-8'});
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=name;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function(){try{URL.revokeObjectURL(a.href);}catch(e){} a.remove();},1000);
+  }catch(e){
+    alert('تعذّر التنزيل في هذا المتصفح.');
+  }
+}
+function exportCfg(){
+  downloadTextFile('adnan-admin-config.json',JSON.stringify(cfg,null,2));
+}
+function importCfgFile(file){
+  var r=new FileReader();
+  r.onload=function(){
+    try{
+      var o=JSON.parse(r.result);
+      if(!validCfg(o)){alert('ملف الإعدادات غير صالح.');return;}
+      cfg=o; persist(); renderAll();
+      alert('تم استيراد الإعدادات.');
+    }catch(e){alert('تعذّر قراءة الملف.');}
+  };
+  r.readAsText(file);
+}
+function resetAll(){
+  if(!confirm('سيتم مسح كل تعديلاتك واستعادة المحتوى والألوان كما هي في الموقع الحي الآن. متابعة؟')) return;
+  cfg=clone(SEED);
+  try{localStorage.removeItem(LS_CFG);}catch(e){}
+  persist(); renderAll();
+}
+function resetTheme(){
+  cfg.theme=clone(SEED.theme);
+  cfg.sectionColors=clone(SEED.sectionColors);
+  scheduleSave(); renderTheme(); updatePreview();
+}
+/* ================= الربط والتهيئة ================= */
+function bindEvents(){
+  $('setupForm').addEventListener('submit',handleSetup);
+  $('loginForm').addEventListener('submit',handleLogin);
+  $('logoutBtn').addEventListener('click',handleLogout);
+  $('tabs').addEventListener('click',function(e){
+    var b=e.target.closest('button[data-tab]'); if(!b) return;
+    document.querySelectorAll('#tabs button').forEach(function(x){x.classList.toggle('active',x===b);});
+    ['content','theme','preview','publish'].forEach(function(t){
+      $('tab-'+t).classList.toggle('hidden',t!==b.getAttribute('data-tab'));
+    });
+    if(b.getAttribute('data-tab')==='preview') updatePreview();
+    if(b.getAttribute('data-tab')==='publish'){renderHistory();renderSummary();}
+  });
+  $('sectionSelect').addEventListener('change',function(){renderEditor(this.value);});
+  $('editorArea').addEventListener('input',function(e){
+    var t=e.target;
+    if(t.getAttribute&&t.getAttribute('data-path')){
+      setPath(cfg,t.getAttribute('data-path'),t.value);
+      scheduleSave();
+    }
+  });
+  $('editorArea').addEventListener('click',function(e){
+    var t=e.target;
+    var add=t.getAttribute&&t.getAttribute('data-add-item');
+    if(add!==null&&add!==undefined){cfg.services.cards[parseInt(add,10)].items.push('بند جديد');scheduleSave();renderEditor('services');return;}
+    var del=t.getAttribute&&t.getAttribute('data-del-item');
+    if(del!==null&&del!==undefined){
+      var ci=parseInt(del,10), ix=parseInt(t.getAttribute('data-idx'),10);
+      cfg.services.cards[ci].items.splice(ix,1);scheduleSave();renderEditor('services');return;
+    }
+    var mv=t.getAttribute&&t.getAttribute('data-move');
+    if(mv){
+      var mc=parseInt(t.getAttribute('data-card'),10), mi=parseInt(t.getAttribute('data-idx'),10);
+      var arr=cfg.services.cards[mc].items, j=mv==='up'?mi-1:mi+1;
+      if(j>=0&&j<arr.length){var tmp=arr[mi];arr[mi]=arr[j];arr[j]=tmp;scheduleSave();renderEditor('services');}
+    }
+  });
+  $('themeArea').addEventListener('input',function(e){
+    var t=e.target, k=t.getAttribute('data-theme');
+    if(k){
+      var v=expandHex(t.value)||t.value;
+      cfg.theme[k]=v;
+      var hex=document.querySelector('input[data-theme-hex="'+k+'"]');
+      if(hex) hex.value=v;
+      scheduleSave();return;
+    }
+    var kh=t.getAttribute('data-theme-hex');
+    if(kh){
+      var nv=expandHex(t.value);
+      if(nv){
+        cfg.theme[kh]=nv;
+        var col=document.querySelector('input[data-theme="'+kh+'"]');
+        if(col) col.value=nv;
+        scheduleSave();
+      }
+    }
+  });
+  $('sectionColorsArea').addEventListener('change',function(e){
+    var t=e.target;
+    var bgc=t.getAttribute('data-sc-bg-check'), txc=t.getAttribute('data-sc-text-check');
+    if(bgc){
+      var o=cfg.sectionColors[bgc];
+      o.bg=t.checked?(document.querySelector('input[data-sc-bg="'+bgc+'"]').value||'#ffffff'):null;
+      var inp=document.querySelector('input[data-sc-bg="'+bgc+'"]');
+      if(inp) inp.disabled=!t.checked;
+      scheduleSave();return;
+    }
+    if(txc){
+      var o2=cfg.sectionColors[txc];
+      o2.text=t.checked?(document.querySelector('input[data-sc-text="'+txc+'"]').value||'#000000'):null;
+      var inp2=document.querySelector('input[data-sc-text="'+txc+'"]');
+      if(inp2) inp2.disabled=!t.checked;
+      scheduleSave();
+    }
+  });
+  $('sectionColorsArea').addEventListener('input',function(e){
+    var t=e.target;
+    var bg=t.getAttribute('data-sc-bg'), tx=t.getAttribute('data-sc-text');
+    if(bg){cfg.sectionColors[bg].bg=t.value;scheduleSave();}
+    if(tx){cfg.sectionColors[tx].text=t.value;scheduleSave();}
+  });
+  document.querySelectorAll('.preview-bar .wbtn').forEach(function(b){
+    b.addEventListener('click',function(){setPreviewWidth(parseInt(b.getAttribute('data-w'),10));});
+  });
+  $('refreshPreviewBtn').addEventListener('click',updatePreview);
+  $('downloadBtn').addEventListener('click',downloadSite);
+  $('exportBtn').addEventListener('click',exportCfg);
+  $('importBtn').addEventListener('click',function(){$('importFile').click();});
+  $('importFile').addEventListener('change',function(){if(this.files&&this.files[0]) importCfgFile(this.files[0]); this.value='';});
+  $('resetBtn').addEventListener('click',resetAll);
+  $('resetThemeBtn').addEventListener('click',function(){if(confirm('إعادة ضبط كل الألوان إلى ألوان الموقع الحالية؟')) resetTheme();});
+  $('historyArea').addEventListener('click',function(e){
+    var b=e.target.closest('button[data-restore]'); if(!b) return;
+    restoreHistory(parseInt(b.getAttribute('data-restore'),10));
+  });
+}
+function init(){
+  bindEvents();
+  if(!(window.crypto&&window.crypto.subtle)){
+    $('gateErr').textContent='هذا المتصفح لا يدعم التشفير المطلوب (SHA-256). جرّب متصفحًا حديثًا.';
+  }
+  var hasHash=false;
+  try{hasHash=!!localStorage.getItem(LS_HASH);}catch(e){}
+  var sess=false;
+  try{sess=sessionStorage.getItem(SS_SESS)==='1';}catch(e){}
+  if(sess&&hasHash){showApp();}
+  else if(hasHash){showGate('login');}
+  else{showGate('setup');}
+}
+window.__admin={
+  generateSite:generateSite, SEED:SEED, TEMPLATE:TEMPLATE,
+  getCfg:function(){return cfg;},
+  setCfg:function(c){cfg=c;},
+  flush:flush,
+  buildDownloadBlob:buildDownloadBlob,
+  searchLog:function(){return LAST_SEARCHES.slice();},
+  resetAll:resetAll
+};
+init();
+})();
+</script>
+</body>
+</html>
