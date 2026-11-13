@@ -142,12 +142,22 @@ main .wrap{max-width:1440px}
 .kv{font-size:14px;color:#55646f}
 .var-chip{display:inline-block;white-space:nowrap;direction:ltr;unicode-bidi:isolate;background:#f4f5f6;border:1px solid #d9dee2;border-radius:4px;padding:0 6px;font-size:12px;color:#55646f;line-height:1.6}
 .live-badge{display:inline-block;background:#1e7b34;color:#fff;font-size:12px;font-weight:700;border-radius:999px;padding:2px 10px}
+.noeffect{background:#fff8e6;border:1px solid #e8c97a;border-radius:6px;padding:10px 12px;font-size:14px;color:#6d4c00;margin:0 0 12px}
+.save-status{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.dirty-badge{background:#b3261e;color:#fff;font-size:12px;font-weight:700;border-radius:999px;padding:2px 10px}
+.saved-badge{background:#1e7b34;color:#fff;font-size:12px;font-weight:700;border-radius:999px;padding:2px 10px}
+.pub-steps{margin:12px 0 0;padding-inline-start:20px;font-size:14px;color:#55646f}
+.pub-steps li{margin-bottom:4px}
+.btn.navy{background:#10263a}
+.btn.navy:hover{background:#0b1c2c}
+#topSaveBtn.dirty{box-shadow:0 0 0 2px #f2b705}
+@media (max-width:699px){#topSaveBtn{display:none}}
 
 
 </style>
 </head>
 <body>
-<header class="topbar"><div class="topbar-inner"><button id="menuBtn" class="icon-btn" aria-label="فتح القائمة" title="القائمة"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><strong>لوحة تحكم عدنان للبناء</strong><span class="topnote">خاصة — لا تؤثر على الموقع الحي</span><span class="spacer"></span><button id="logoutBtn" class="btn small hidden">تسجيل الخروج</button></div></header>
+<header class="topbar"><div class="topbar-inner"><button id="menuBtn" class="icon-btn" aria-label="فتح القائمة" title="القائمة"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><strong>لوحة تحكم عدنان للبناء</strong><span class="topnote">خاصة — لا تؤثر على الموقع الحي</span><span class="spacer"></span><button id="topSaveBtn" class="btn small hidden">حفظ التعديلات</button><button id="logoutBtn" class="btn small hidden">تسجيل الخروج</button></div></header>
 <main class="wrap">
 
 <section id="gate" class="gate card">
@@ -218,10 +228,21 @@ main .wrap{max-width:1440px}
 <div class="acc-body"><div class="acc-inner">
 <div id="tab-publish">
 <div class="card">
-<h2 style="margin-top:0">النشر</h2>
-<p class="note">اللوحة لا تنشر بنفسها. عند تنزيل الملف أرسله إلى Muse، وسيرفعه إلى GitHub بعد موافقتك، ثم يتحدث الموقع تلقائيًا على Vercel وGitHub Pages.</p>
+<h2 style="margin-top:0">الحفظ والنشر</h2>
+<p class="noeffect">التعديلات لا تؤثر على الموقع الحي إطلاقًا حتى النشر — كل تعديلاتك محفوظة محليًا في متصفحك فقط.</p>
+<div class="save-status"><span class="dirty-badge hidden" id="dirtyBadge">تعديلات غير محفوظة</span><span class="saved-badge" id="savedBadge">كل التعديلات محفوظة</span><span class="kv" id="lastSavedLine"></span></div>
 <p id="changeSummary" class="kv"></p>
-<button class="btn" id="downloadBtn">تنزيل index.html للنشر</button>
+<button class="btn full" id="saveBtn">حفظ التعديلات</button>
+<p class="ok" id="saveMsg"></p>
+<button class="btn navy full" id="publishBtn" style="margin-top:10px">نشر</button>
+<p class="ok" id="publishMsg"></p>
+<p class="kv" id="publishFingerprint"></p>
+<ol class="pub-steps" id="publishSteps">
+<li>نزّل ملف index.html من زر «نشر».</li>
+<li>أرسل الملف إلى Muse.</li>
+<li>سيرفعه Muse إلى GitHub بعد موافقتك.</li>
+<li>يعيد Vercel وGitHub Pages نشر الموقع تلقائيًا.</li>
+</ol>
 </div>
 <div class="card" style="margin-top:14px">
 <h2 style="margin-top:0">أدوات</h2>
@@ -262,7 +283,7 @@ main .wrap{max-width:1440px}
 </div></div>
 </div>
 </nav>
-<div class="side-foot"><p class="saved" id="savedNote">التعديلات تُحفظ تلقائيًا في هذا المتصفح.</p></div>
+<div class="side-foot"><p class="saved" id="savedNote">كل التعديلات محفوظة في هذا المتصفح.</p></div>
 </aside>
 <div class="stage" id="previewCol">
 <div class="stage-bar"><span class="live-badge">معاينة حية</span><span class="kv">تتحدث تلقائيًا مع كل تعديل</span><span class="spacer"></span><span class="device-meta" id="deviceMeta"><b>حاسوب</b> · 1280px · 100%</span></div>
@@ -443,7 +464,8 @@ function infoDiv(inf,phoneHref){
 /* ================= الحالة والتخزين ================= */
 var cfg=loadCfg();
 var currentSection='header';
-var saveTimer=null, previewTimer=null, lockTimer=null;
+var previewTimer=null, lockTimer=null;
+var savedCfgJson=null, lastSavedAt=0;
 function validCfg(o){
   try{
     return o && o.header && typeof o.hero.title==='string' && Array.isArray(o.facts) && o.facts.length===4
@@ -460,25 +482,77 @@ function loadCfg(){
   }catch(e){}
   return clone(SEED);
 }
-function persist(){
+function pluralFields(n){
+  if(n===1) return 'حقل واحد جديد';
+  if(n===2) return 'حقلان جديدان';
+  return n+' حقول جديدة';
+}
+function countDiff(a,b){
+  var n=0;
+  (function walk(x,y){
+    if(typeof x!==typeof y){n++;return;}
+    if(x&&y&&typeof x==='object'){
+      var keys={}; Object.keys(x).forEach(function(k){keys[k]=1;}); Object.keys(y).forEach(function(k){keys[k]=1;});
+      Object.keys(keys).forEach(function(k){walk(x[k],y[k]);});
+    }else if(x!==y){n++;}
+  })(a,b);
+  return n;
+}
+function changedSections(){
+  var out=[];
+  Object.keys(SECTION_LABELS).forEach(function(k){
+    if(JSON.stringify(cfg[k])!==JSON.stringify(SEED[k])) out.push(SECTION_LABELS[k]);
+  });
+  if(JSON.stringify(cfg.theme)!==JSON.stringify(SEED.theme)) out.push('الألوان');
+  var scDiff=false;
+  Object.keys(cfg.sectionColors||{}).forEach(function(k){ if(JSON.stringify(cfg.sectionColors[k])!==JSON.stringify(SEED.sectionColors[k])) scDiff=true; });
+  if(scDiff) out.push('ألوان الأقسام');
+  return out;
+}
+function isDirtyNow(){ return savedCfgJson!==null && JSON.stringify(cfg)!==savedCfgJson; }
+function refreshDirty(){
+  var d=isDirtyNow();
+  var db=$('dirtyBadge'), sb=$('savedBadge');
+  if(db) db.classList.toggle('hidden',!d);
+  if(sb) sb.classList.toggle('hidden',d);
+  var tb=$('topSaveBtn'); if(tb) tb.classList.toggle('dirty',d);
+  var sn=$('savedNote');
+  if(sn){
+    if(d) sn.textContent='لديك تعديلات غير محفوظة — احفظها قبل مغادرة اللوحة.';
+    else if(lastSavedAt) sn.textContent='آخر حفظ: '+new Date(lastSavedAt).toLocaleTimeString('ar',{hour:'2-digit',minute:'2-digit'})+'.';
+    else sn.textContent='كل التعديلات محفوظة في هذا المتصفح.';
+  }
+  var ll=$('lastSavedLine');
+  if(ll){
+    if(lastSavedAt) ll.textContent='آخر حفظ: '+new Date(lastSavedAt).toLocaleTimeString('ar',{hour:'2-digit',minute:'2-digit'});
+    else ll.textContent='لم يتم الحفظ بعد في هذه الجلسة.';
+  }
+}
+function saveEdits(){
+  var prev=null;
+  try{prev=savedCfgJson?JSON.parse(savedCfgJson):clone(SEED);}catch(e){prev=clone(SEED);}
+  var diffN=countDiff(cfg,prev);
   try{localStorage.setItem(LS_CFG,JSON.stringify(cfg));}catch(e){}
+  savedCfgJson=JSON.stringify(cfg);
+  lastSavedAt=Date.now();
   pushHistory();
   renderSummary();
+  refreshDirty();
+  var t=new Date(lastSavedAt).toLocaleTimeString('ar',{hour:'2-digit',minute:'2-digit'});
+  var msg=$('saveMsg');
+  if(msg){
+    if(diffN===0) msg.textContent='لا توجد تعديلات جديدة — كل شيء محفوظ. (آخر حفظ: '+t+')';
+    else msg.textContent='تم حفظ التعديلات ✓ — '+t+' — '+pluralFields(diffN)+'.';
+  }
 }
+function persist(){ saveEdits(); }
 function scheduleSave(){
-  $('savedNote').textContent='جارٍ الحفظ…';
-  if(saveTimer) clearTimeout(saveTimer);
-  saveTimer=setTimeout(function(){
-    persist();
-    $('savedNote').textContent='تم الحفظ تلقائيًا في هذا المتصفح.';
-  },400);
+  refreshDirty();
   if(previewTimer) clearTimeout(previewTimer);
   previewTimer=setTimeout(updatePreview,300);
 }
 function flush(){
-  if(saveTimer){clearTimeout(saveTimer);saveTimer=null;}
   if(previewTimer){clearTimeout(previewTimer);previewTimer=null;}
-  persist();
   updatePreview();
 }
 function loadHistory(){
@@ -503,20 +577,13 @@ function restoreHistory(idx){
   }catch(e){}
 }
 function countChanges(){
-  var n=0;
-  (function walk(a,b){
-    if(typeof a!==typeof b){n++;return;}
-    if(a&&b&&typeof a==='object'){
-      var keys={}; Object.keys(a).forEach(function(k){keys[k]=1;}); Object.keys(b).forEach(function(k){keys[k]=1;});
-      Object.keys(keys).forEach(function(k){walk(a[k],b[k]);});
-    }else if(a!==b){n++;}
-  })(cfg,SEED);
-  return n;
+  return countDiff(cfg,SEED);
 }
 function renderSummary(){
   var el=$('changeSummary'); if(!el) return;
   var n=countChanges();
   el.textContent=n===0?'لا توجد تغييرات عن نسخة الموقع الحالية.':'عدد الحقول والألوان المعدّلة عن نسخة الموقع الحالية: '+n+'.';
+  refreshDirty();
 }
 function renderHistory(){
   var el=$('historyArea'); if(!el) return;
@@ -548,6 +615,7 @@ function seedCreds(){
 function showGate(){
   $('gate').classList.remove('hidden');
   $('app').classList.add('hidden');
+  $('topSaveBtn').classList.add('hidden');
   $('logoutBtn').classList.add('hidden');
   $('loginUser').value=storedUser();
   $('loginPass').value='';
@@ -558,6 +626,7 @@ function showGate(){
 function showApp(){
   $('gate').classList.add('hidden');
   $('app').classList.remove('hidden');
+  $('topSaveBtn').classList.remove('hidden');
   $('logoutBtn').classList.remove('hidden');
   renderAll();
   syncSidebar();
@@ -859,6 +928,16 @@ function syncSidebar(){
 }
 
 /* ================= النشر والأدوات ================= */
+function publishSite(){
+  saveEdits();
+  downloadSite();
+  var secs=changedSections();
+  var t=new Date(lastSavedAt||Date.now()).toLocaleTimeString('ar',{hour:'2-digit',minute:'2-digit'});
+  var fp=$('publishFingerprint');
+  if(fp) fp.textContent='ما يُنشر الآن: '+(secs.length?('الأقسام المعدّلة: '+secs.join('، ')+' ('+secs.length+')'):'لا توجد أقسام معدّلة عن نسخة الموقع الحالية')+' — آخر حفظ: '+t+'.';
+  var pm=$('publishMsg');
+  if(pm) pm.textContent='تم تنزيل الملف ✓ — أكمل الخطوات التالية لإتمام النشر.';
+}
 function buildDownloadBlob(){
   return new Blob([generateSite(cfg)],{type:'text/html;charset=utf-8'});
 }
@@ -1021,10 +1100,13 @@ function bindEvents(){
     });
   });
   window.addEventListener('resize',function(){syncSidebar();});
+  window.addEventListener('beforeunload',function(e){ if(isDirtyNow()){ e.preventDefault(); e.returnValue=''; } });
   $('refreshPreviewBtn').addEventListener('click',updatePreview);
   var pf=$('previewFrame');
   if(pf){pf.addEventListener('load',function(){fitPreview();setTimeout(fitPreview,400);});}
-  $('downloadBtn').addEventListener('click',downloadSite);
+  $('saveBtn').addEventListener('click',saveEdits);
+  $('publishBtn').addEventListener('click',publishSite);
+  $('topSaveBtn').addEventListener('click',saveEdits);
   $('exportBtn').addEventListener('click',exportCfg);
   $('importBtn').addEventListener('click',function(){$('importFile').click();});
   $('importFile').addEventListener('change',function(){if(this.files&&this.files[0]) importCfgFile(this.files[0]); this.value='';});
@@ -1037,6 +1119,8 @@ function bindEvents(){
 }
 function init(){
   bindEvents();
+  savedCfgJson=JSON.stringify(cfg);
+  var h0=loadHistory(); if(h0.length) lastSavedAt=h0[h0.length-1].t;
   if(!(window.crypto&&window.crypto.subtle)){
     $('gateErr').textContent='هذا المتصفح لا يدعم التشفير المطلوب (SHA-256). جرّب متصفحًا حديثًا.';
   }
@@ -1051,6 +1135,9 @@ window.__admin={
   DEFAULT_USER:DEFAULT_USER, DEFAULT_HASH:DEFAULT_HASH, sha256:sha256hex,
   getCfg:function(){return cfg;},
   setCfg:function(c){cfg=c;},
+  saveEdits:saveEdits,
+  publishSite:publishSite,
+  isDirty:function(){return isDirtyNow();},
   flush:flush,
   fitPreview:fitPreview,
   previewScale:function(){return previewScale;},
