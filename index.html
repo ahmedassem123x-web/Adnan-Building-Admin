@@ -77,6 +77,21 @@ input:focus-visible,textarea:focus-visible,select:focus-visible,.eye-btn:focus-v
 .hist{margin-top:14px}
 .hist button{margin-inline-start:8px}
 .kv{font-size:14px;color:#55646f}
+.var-chip{display:inline-block;white-space:nowrap;direction:ltr;unicode-bidi:isolate;background:#f4f5f6;border:1px solid #d9dee2;border-radius:4px;padding:0 6px;font-size:12px;color:#55646f;line-height:1.6}
+.live-badge{display:inline-block;background:#1e7b34;color:#fff;font-size:12px;font-weight:700;border-radius:999px;padding:2px 10px}
+.preview-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.preview-col{min-width:0}
+@media (min-width:1024px){
+main .wrap{max-width:1440px}
+.split{display:grid;grid-template-columns:520px minmax(0,1fr);gap:20px;align-items:start}
+.preview-col{position:sticky;top:76px}
+.preview-col .preview-wrap iframe{height:min(760px,calc(100vh - 190px))}
+#tabs button[data-tab="preview"]{display:none}
+}
+@media (max-width:1023px){
+.preview-col{display:none}
+.preview-col.mobile-show{display:block;margin-top:14px}
+}
 @media (max-width:640px){.gate{margin:24px auto}.card{padding:16px}.preview-wrap iframe{height:600px}}
 </style>
 </head>
@@ -99,6 +114,8 @@ input:focus-visible,textarea:focus-visible,select:focus-visible,.eye-btn:focus-v
 </section>
 
 <section id="app" class="hidden">
+<div class="split">
+<div class="edit-col">
 <nav class="tabs" id="tabs">
 <button data-tab="content" class="active">المحتوى</button>
 <button data-tab="theme">الألوان</button>
@@ -134,16 +151,19 @@ input:focus-visible,textarea:focus-visible,select:focus-visible,.eye-btn:focus-v
 </div>
 </div>
 
-<div id="tab-preview" class="hidden">
+</div>
+<aside class="preview-col" id="previewCol">
+<div class="preview-head"><span class="live-badge">معاينة حية</span><span class="kv">تتحدث تلقائيًا مع كل تعديل</span></div>
 <div class="preview-bar">
 <span class="kv">عرض المعاينة:</span>
 <button class="wbtn" data-w="390">جوال 390</button>
 <button class="wbtn" data-w="820">لوحي 820</button>
 <button class="wbtn active" data-w="1280">حاسوب 1280</button>
+<button class="wbtn" data-w="full">كامل</button>
 <button class="btn ghost small" id="refreshPreviewBtn">تحديث المعاينة</button>
 </div>
 <div class="preview-wrap" id="previewWrap" style="max-width:1280px"><iframe id="previewFrame" title="معاينة الموقع"></iframe></div>
-</div>
+</aside>
 
 <div id="tab-publish" class="hidden">
 <div class="card">
@@ -182,6 +202,7 @@ input:focus-visible,textarea:focus-visible,select:focus-visible,.eye-btn:focus-v
 <p class="ok" id="credOk"></p>
 <button class="btn" type="submit">حفظ بيانات الدخول</button>
 </form>
+</div>
 </div>
 </div>
 </section>
@@ -463,6 +484,7 @@ function showApp(){
   $('app').classList.remove('hidden');
   $('logoutBtn').classList.remove('hidden');
   renderAll();
+  syncPreviewCol(currentTab());
 }
 function refreshLockState(){
   var btn=$('loginBtn'), msg=$('lockMsg'), err=$('loginErr');
@@ -646,7 +668,7 @@ function renderTheme(){
   var el=$('themeArea');
   el.innerHTML=THEME_VARS.map(function(p){
     var v=cfg.theme[p[0]];
-    return '<div class="theme-row"><span class="tlabel">'+esc(p[2])+' <span class="kv" dir="ltr">'+esc(p[1])+'</span></span>'
+    return '<div class="theme-row"><span class="tlabel">'+esc(p[2])+' <span class="var-chip" dir="ltr">'+esc(p[1])+'</span></span>'
       +'<input type="color" data-theme="'+p[0]+'" value="'+esc(expandHex(v)||'#000000')+'">'
       +'<input type="text" data-theme-hex="'+p[0]+'" value="'+esc(v)+'" dir="ltr" maxlength="7"></div>';
   }).join('');
@@ -674,10 +696,22 @@ function updatePreview(){
   if(f) f.srcdoc=generateSite(cfg);
 }
 function setPreviewWidth(w){
-  $('previewWrap').style.maxWidth=w+'px';
+  var wrap=$('previewWrap');
+  if(w==='full'){wrap.style.maxWidth='100%';}
+  else{wrap.style.maxWidth=w+'px';}
   document.querySelectorAll('.preview-bar .wbtn').forEach(function(b){
     b.classList.toggle('active',b.getAttribute('data-w')===String(w));
   });
+}
+function isDesktop(){return !!(window.matchMedia&&window.matchMedia('(min-width:1024px)').matches);}
+function currentTab(){
+  var a=document.querySelector('#tabs button.active');
+  return a?a.getAttribute('data-tab'):'content';
+}
+function syncPreviewCol(tab){
+  var col=$('previewCol'); if(!col) return;
+  if(isDesktop()){col.classList.remove('mobile-show');}
+  else{col.classList.toggle('mobile-show',(tab||currentTab())==='preview');}
 }
 
 /* ================= النشر والأدوات ================= */
@@ -756,13 +790,15 @@ function bindEvents(){
   });
   $('tabs').addEventListener('click',function(e){
     var b=e.target.closest('button[data-tab]'); if(!b) return;
+    var tab=b.getAttribute('data-tab');
     document.querySelectorAll('#tabs button').forEach(function(x){x.classList.toggle('active',x===b);});
     ['content','theme','preview','publish','security'].forEach(function(t){
-      $('tab-'+t).classList.toggle('hidden',t!==b.getAttribute('data-tab'));
+      var p=$('tab-'+t); if(p) p.classList.toggle('hidden',t!==tab);
     });
-    if(b.getAttribute('data-tab')==='preview') updatePreview();
-    if(b.getAttribute('data-tab')==='publish'){renderHistory();renderSummary();}
-    if(b.getAttribute('data-tab')==='security') renderSecurity();
+    syncPreviewCol(tab);
+    if(tab==='preview') updatePreview();
+    if(tab==='publish'){renderHistory();renderSummary();}
+    if(tab==='security') renderSecurity();
   });
   $('sectionSelect').addEventListener('change',function(){renderEditor(this.value);});
   $('editorArea').addEventListener('input',function(e){
@@ -833,8 +869,12 @@ function bindEvents(){
     if(tx){cfg.sectionColors[tx].text=t.value;scheduleSave();}
   });
   document.querySelectorAll('.preview-bar .wbtn').forEach(function(b){
-    b.addEventListener('click',function(){setPreviewWidth(parseInt(b.getAttribute('data-w'),10));});
+    b.addEventListener('click',function(){
+      var dw=b.getAttribute('data-w');
+      setPreviewWidth(dw==='full'?'full':parseInt(dw,10));
+    });
   });
+  window.addEventListener('resize',function(){syncPreviewCol(currentTab());});
   $('refreshPreviewBtn').addEventListener('click',updatePreview);
   $('downloadBtn').addEventListener('click',downloadSite);
   $('exportBtn').addEventListener('click',exportCfg);
