@@ -18,11 +18,15 @@ a{color:inherit}
 .topnote{color:#b6c3cd;font-size:13px}
 .topbar .spacer{flex:1}
 .card{background:#fff;border:1px solid #d9dee2;border-radius:8px;padding:22px}
-.gate{max-width:460px;margin:48px auto}
-.gate h1{font-size:24px;margin:0 0 8px}
-.gate h2{font-size:19px;margin:0 0 12px}
+.gate{max-width:440px;margin:48px auto;text-align:start}
+.gate h1{font-size:24px;margin:0 0 6px;text-align:start}
+.gate h2{font-size:19px;margin:0 0 14px;text-align:start}
+.gate .note{margin:0 0 18px;text-align:start}
 .note{color:#55646f;font-size:14px}
 .err{color:#b3261e;font-size:14px;min-height:1.4em;margin:8px 0}
+.err:not(:empty){background:#fdecea;border:1px solid #f5c6c2;border-radius:6px;padding:8px 10px}
+.ok{font-size:14px;min-height:1.4em;margin:8px 0}
+.ok:not(:empty){color:#1e7b34;background:#e6f4ea;border:1px solid #a3d9a5;border-radius:6px;padding:8px 10px}
 .lock{color:#8a5a00;background:#fff4d6;border:1px solid #e8c97a;border-radius:6px;padding:10px 12px;font-size:14px}
 label{display:grid;gap:6px;font-size:14px;color:#55646f;margin-bottom:14px}
 input,textarea,select{font:inherit;padding:10px 12px;border:1px solid #d9dee2;border-radius:6px;width:100%;background:#fff;color:#10263a}
@@ -34,6 +38,13 @@ input[type=color]{padding:2px;height:42px;cursor:pointer}
 .btn.small{padding:7px 14px;font-size:14px}
 .btn.danger{background:#b3261e}
 .btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.full{width:100%;padding:13px 22px;font-size:16px}
+.field>label{display:block;font-size:14px;color:#55646f;margin-bottom:6px;text-align:start}
+.pw-wrap{position:relative}
+.pw-wrap input{padding-right:44px}
+.eye-btn{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:transparent;border:0;padding:6px;cursor:pointer;color:#55646f;border-radius:6px;display:grid;place-items:center;line-height:0}
+.eye-btn:hover{color:#10263a;background:#f4f5f6}
+input:focus-visible,textarea:focus-visible,select:focus-visible,.eye-btn:focus-visible,.btn:focus-visible,.mini-btn:focus-visible,.tabs button:focus-visible,.wbtn:focus-visible{outline:3px solid #b9822a;outline-offset:2px}
 .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 6px}
 .tabs button{padding:10px 18px;border:1px solid #d9dee2;background:#fff;border-radius:6px;cursor:pointer;font:inherit;color:#10263a}
 .tabs button.active{background:#10263a;color:#fff;border-color:#10263a}
@@ -75,21 +86,14 @@ input[type=color]{padding:2px;height:42px;cursor:pointer}
 
 <section id="gate" class="gate card">
 <h1>لوحة تحكم عدنان للبناء</h1>
-<p class="note">هذه اللوحة خاصة بك وحدك. كلمة المرور تُحفظ في هذا المتصفح فقط بصيغة مشفّرة، ولا يعرفها أحد غيرك. إذا نسيتها، امسح بيانات هذا الموقع من إعدادات المتصفح وستظهر شاشة تعيين كلمة مرور جديدة.</p>
-<form id="setupForm" class="hidden" autocomplete="off">
-<h2>تعيين كلمة المرور (أول مرة)</h2>
-<label>كلمة المرور الجديدة (8 أحرف على الأقل)<input type="password" id="setupPass" autocomplete="new-password" minlength="8"></label>
-<label>تأكيد كلمة المرور<input type="password" id="setupPass2" autocomplete="new-password"></label>
-<p class="err" id="setupErr"></p>
-<button class="btn" type="submit">تعيين كلمة المرور والدخول</button>
-</form>
-<form id="loginForm" class="hidden" autocomplete="off">
+<p class="note">هذه اللوحة خاصة بك وحدك. سجّل دخولك للمتابعة. لو نسيت كلمة المرور، امسح بيانات هذا الموقع من إعدادات المتصفح وستعود بيانات الدخول الافتراضية.</p>
+<form id="loginForm" autocomplete="off">
 <h2>تسجيل الدخول</h2>
-<label>اسم المستخدم<input type="text" id="loginUser" value="admin" autocomplete="username" dir="ltr"></label>
-<label>كلمة المرور<input type="password" id="loginPass" autocomplete="current-password"></label>
+<div class="field"><label for="loginUser">اسم المستخدم</label><input type="text" id="loginUser" value="admin123" autocomplete="username" dir="ltr"></div>
+<div class="field"><label for="loginPass">كلمة المرور</label><div class="pw-wrap"><input type="password" id="loginPass" autocomplete="current-password" dir="ltr"><button type="button" class="eye-btn" data-eye="loginPass" aria-label="إظهار كلمة المرور" title="إظهار كلمة المرور"></button></div></div>
 <p class="err" id="loginErr"></p>
 <p class="lock hidden" id="lockMsg"></p>
-<button class="btn" type="submit" id="loginBtn">دخول</button>
+<button class="btn full" type="submit" id="loginBtn">تسجيل الدخول</button>
 </form>
 <p class="err" id="gateErr"></p>
 </section>
@@ -100,6 +104,7 @@ input[type=color]{padding:2px;height:42px;cursor:pointer}
 <button data-tab="theme">الألوان</button>
 <button data-tab="preview">المعاينة</button>
 <button data-tab="publish">النشر</button>
+<button data-tab="security">الأمان</button>
 </nav>
 <p class="saved" id="savedNote">التعديلات تُحفظ تلقائيًا في هذا المتصفح.</p>
 
@@ -163,6 +168,22 @@ input[type=color]{padding:2px;height:42px;cursor:pointer}
 <div id="historyArea"></div>
 </div>
 </div>
+
+<div id="tab-security" class="hidden">
+<div class="card">
+<h2 style="margin-top:0">بيانات الدخول</h2>
+<p class="note">غيّر اسم المستخدم وكلمة المرور هنا. تُحفظ كلمة المرور الجديدة مشفّرة في هذا المتصفح فقط.</p>
+<form id="credForm" autocomplete="off">
+<div class="field"><label for="credCurrent">كلمة المرور الحالية</label><div class="pw-wrap"><input type="password" id="credCurrent" dir="ltr" autocomplete="current-password"><button type="button" class="eye-btn" data-eye="credCurrent" aria-label="إظهار كلمة المرور" title="إظهار كلمة المرور"></button></div></div>
+<div class="field"><label for="credUser">اسم المستخدم الجديد</label><input type="text" id="credUser" dir="ltr" autocomplete="username"></div>
+<div class="field"><label for="credNew">كلمة المرور الجديدة (8 أحرف على الأقل)</label><div class="pw-wrap"><input type="password" id="credNew" dir="ltr" autocomplete="new-password"><button type="button" class="eye-btn" data-eye="credNew" aria-label="إظهار كلمة المرور" title="إظهار كلمة المرور"></button></div></div>
+<div class="field"><label for="credNew2">تأكيد كلمة المرور الجديدة</label><div class="pw-wrap"><input type="password" id="credNew2" dir="ltr" autocomplete="new-password"><button type="button" class="eye-btn" data-eye="credNew2" aria-label="إظهار كلمة المرور" title="إظهار كلمة المرور"></button></div></div>
+<p class="err" id="credErr"></p>
+<p class="ok" id="credOk"></p>
+<button class="btn" type="submit">حفظ بيانات الدخول</button>
+</form>
+</div>
+</div>
 </section>
 </main>
 <script>
@@ -200,7 +221,11 @@ var SEED = {
  sectionColors:{header:{bg:null,text:null},hero:{bg:null,text:null},facts:{bg:null,text:null},services:{bg:null,text:null},about:{bg:null,text:null},contact:{bg:null,text:null},footer:{bg:null,text:null}}
 };
 /* ================= الثوابت ================= */
-var LS_CFG='adnan-admin-config-v1', LS_HASH='adnan-admin-pass-hash', LS_FAILS='adnan-admin-fails', LS_LOCK='adnan-admin-lockuntil', LS_HIST='adnan-admin-history-v1';
+var LS_CFG='adnan-admin-config-v1', LS_HASH='adnan-admin-pass-hash', LS_USER='adnan-admin-user', LS_FAILS='adnan-admin-fails', LS_LOCK='adnan-admin-lockuntil', LS_HIST='adnan-admin-history-v1';
+var DEFAULT_USER='admin123';
+var DEFAULT_HASH='240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
+var EYE_OPEN='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
+var EYE_OFF='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.6 10.6 0 0 1 12 19c-6.5 0-10-7-10-7a17.6 17.6 0 0 1 4.06-4.94"/><path d="M9.9 4.24A9.5 9.5 0 0 1 12 5c6.5 0 10 7 10 7a17.7 17.7 0 0 1-2.16 3.19"/><path d="M14.12 14.12A3 3 0 1 1 9.88 9.88"/><path d="M2 2l20 20"/></svg>';
 var SS_SESS='adnan-admin-session';
 var MAX_FAILS=5, LOCK_MS=10*60*1000;
 var FACT_PREFIX=['<div class="rv">','<div class="rv" style="--d:.08s">','<div class="rv" style="--d:.16s">','<div class="rv" style="--d:.24s">'];
@@ -416,14 +441,22 @@ function sha256hex(str){
 function fails(){return parseInt(localStorage.getItem(LS_FAILS)||'0',10)||0;}
 function lockUntil(){return parseInt(localStorage.getItem(LS_LOCK)||'0',10)||0;}
 function isLocked(){return Date.now()<lockUntil();}
-function showGate(which){
+function storedUser(){try{return localStorage.getItem(LS_USER)||DEFAULT_USER;}catch(e){return DEFAULT_USER;}}
+function seedCreds(){
+  try{
+    if(!localStorage.getItem(LS_HASH)) localStorage.setItem(LS_HASH,DEFAULT_HASH);
+    if(!localStorage.getItem(LS_USER)) localStorage.setItem(LS_USER,DEFAULT_USER);
+  }catch(e){}
+}
+function showGate(){
   $('gate').classList.remove('hidden');
   $('app').classList.add('hidden');
   $('logoutBtn').classList.add('hidden');
-  $('setupForm').classList.toggle('hidden',which!=='setup');
-  $('loginForm').classList.toggle('hidden',which!=='login');
+  $('loginUser').value=storedUser();
+  $('loginPass').value='';
+  $('loginErr').textContent='';
   $('gateErr').textContent='';
-  if(which==='login') refreshLockState();
+  refreshLockState();
 }
 function showApp(){
   $('gate').classList.add('hidden');
@@ -449,19 +482,6 @@ function refreshLockState(){
     if(lockTimer){clearInterval(lockTimer);lockTimer=null;}
   }
 }
-function handleSetup(e){
-  e.preventDefault();
-  var p=$('setupPass').value, p2=$('setupPass2').value, err=$('setupErr');
-  err.textContent='';
-  if(p.length<8){err.textContent='كلمة المرور يجب أن تكون 8 أحرف على الأقل.';return;}
-  if(p!==p2){err.textContent='كلمتا المرور غير متطابقتين.';return;}
-  sha256hex(p).then(function(hash){
-    try{localStorage.setItem(LS_HASH,hash);}catch(ex){}
-    try{localStorage.removeItem(LS_FAILS);localStorage.removeItem(LS_LOCK);}catch(ex2){}
-    try{sessionStorage.setItem(SS_SESS,'1');}catch(ex3){}
-    showApp();
-  }).catch(function(){err.textContent='هذا المتصفح لا يدعم التشفير المطلوب (SHA-256). جرّب متصفحًا حديثًا.';});
-}
 function handleLogin(e){
   e.preventDefault();
   var err=$('loginErr');
@@ -469,7 +489,7 @@ function handleLogin(e){
   if(isLocked()){refreshLockState();return;}
   var user=$('loginUser').value.trim();
   var pass=$('loginPass').value;
-  if(user!=='admin'){err.textContent='اسم المستخدم غير صحيح.';return;}
+  if(user!==storedUser()){err.textContent='اسم المستخدم غير صحيح.';return;}
   sha256hex(pass).then(function(hash){
     var stored=null;
     try{stored=localStorage.getItem(LS_HASH);}catch(ex){}
@@ -492,8 +512,36 @@ function handleLogin(e){
 }
 function handleLogout(){
   try{sessionStorage.removeItem(SS_SESS);}catch(e){}
-  $('loginPass').value='';
-  showGate('login');
+  showGate();
+}
+function renderSecurity(){
+  var u=$('credUser'); if(u) u.value=storedUser();
+  ['credCurrent','credNew','credNew2'].forEach(function(id){var el=$(id); if(el) el.value='';});
+  var e1=$('credErr'); if(e1) e1.textContent='';
+  var o=$('credOk'); if(o) o.textContent='';
+}
+function handleCredChange(e){
+  e.preventDefault();
+  var err=$('credErr'), ok=$('credOk');
+  err.textContent=''; ok.textContent='';
+  var cur=$('credCurrent').value, nu=$('credUser').value.trim(), np=$('credNew').value, np2=$('credNew2').value;
+  if(!nu){err.textContent='اكتب اسم المستخدم الجديد.';return;}
+  if(np.length<8){err.textContent='كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل.';return;}
+  if(np!==np2){err.textContent='كلمتا المرور الجديدتان غير متطابقتين.';return;}
+  sha256hex(cur).then(function(curHash){
+    var stored=null;
+    try{stored=localStorage.getItem(LS_HASH);}catch(ex){}
+    if(!stored||curHash!==stored){err.textContent='كلمة المرور الحالية غير صحيحة.';return;}
+    return sha256hex(np).then(function(newHash){
+      try{
+        localStorage.setItem(LS_USER,nu);
+        localStorage.setItem(LS_HASH,newHash);
+      }catch(ex2){}
+      $('loginUser').value=nu;
+      renderSecurity();
+      ok.textContent='تم حفظ بيانات الدخول الجديدة.';
+    });
+  }).catch(function(){err.textContent='هذا المتصفح لا يدعم التشفير المطلوب (SHA-256). جرّب متصفحًا حديثًا.';});
 }
 
 /* ================= المحررات ================= */
@@ -690,17 +738,31 @@ function resetTheme(){
 }
 /* ================= الربط والتهيئة ================= */
 function bindEvents(){
-  $('setupForm').addEventListener('submit',handleSetup);
   $('loginForm').addEventListener('submit',handleLogin);
+  $('credForm').addEventListener('submit',handleCredChange);
   $('logoutBtn').addEventListener('click',handleLogout);
+  document.querySelectorAll('.eye-btn').forEach(function(b){b.innerHTML=EYE_OPEN;});
+  document.addEventListener('click',function(e){
+    var b=e.target&&e.target.closest?e.target.closest('.eye-btn'):null;
+    if(!b) return;
+    var inp=document.getElementById(b.getAttribute('data-eye'));
+    if(!inp) return;
+    var show=inp.type==='password';
+    inp.type=show?'text':'password';
+    b.setAttribute('aria-label',show?'إخفاء كلمة المرور':'إظهار كلمة المرور');
+    b.setAttribute('title',show?'إخفاء كلمة المرور':'إظهار كلمة المرور');
+    b.innerHTML=show?EYE_OFF:EYE_OPEN;
+    inp.focus();
+  });
   $('tabs').addEventListener('click',function(e){
     var b=e.target.closest('button[data-tab]'); if(!b) return;
     document.querySelectorAll('#tabs button').forEach(function(x){x.classList.toggle('active',x===b);});
-    ['content','theme','preview','publish'].forEach(function(t){
+    ['content','theme','preview','publish','security'].forEach(function(t){
       $('tab-'+t).classList.toggle('hidden',t!==b.getAttribute('data-tab'));
     });
     if(b.getAttribute('data-tab')==='preview') updatePreview();
     if(b.getAttribute('data-tab')==='publish'){renderHistory();renderSummary();}
+    if(b.getAttribute('data-tab')==='security') renderSecurity();
   });
   $('sectionSelect').addEventListener('change',function(){renderEditor(this.value);});
   $('editorArea').addEventListener('input',function(e){
@@ -790,16 +852,15 @@ function init(){
   if(!(window.crypto&&window.crypto.subtle)){
     $('gateErr').textContent='هذا المتصفح لا يدعم التشفير المطلوب (SHA-256). جرّب متصفحًا حديثًا.';
   }
-  var hasHash=false;
-  try{hasHash=!!localStorage.getItem(LS_HASH);}catch(e){}
+  seedCreds();
   var sess=false;
   try{sess=sessionStorage.getItem(SS_SESS)==='1';}catch(e){}
-  if(sess&&hasHash){showApp();}
-  else if(hasHash){showGate('login');}
-  else{showGate('setup');}
+  if(sess){showApp();}
+  else{showGate();}
 }
 window.__admin={
   generateSite:generateSite, SEED:SEED, TEMPLATE:TEMPLATE,
+  DEFAULT_USER:DEFAULT_USER, DEFAULT_HASH:DEFAULT_HASH, sha256:sha256hex,
   getCfg:function(){return cfg;},
   setCfg:function(c){cfg=c;},
   flush:flush,
