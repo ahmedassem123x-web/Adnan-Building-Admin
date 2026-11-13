@@ -596,21 +596,95 @@ function renderHistory(){
   }).join('');
 }
 /* ================= المصادقة ================= */
-function sha256hex(str){
-  if(!(window.crypto&&window.crypto.subtle)) return Promise.reject(new Error('no-subtle'));
-  return window.crypto.subtle.digest('SHA-256',new TextEncoder().encode(str)).then(function(buf){
-    return Array.prototype.map.call(new Uint8Array(buf),function(b){return ('0'+b.toString(16)).slice(-2);}).join('');
-  });
+/* تخزين آمن: في الوضع الخاص بسفاري قد يرمي setItem استثناءً،
+   فنحتفظ بنسخة في الذاكرة ليكمل الدخول والقفل داخل التبويب الحالي. */
+var memStore={};
+function lsGet(k){try{var v=localStorage.getItem(k);return (v===null&&(k in memStore))?memStore[k]:v;}catch(e){return (k in memStore)?memStore[k]:null;}}
+function lsSet(k,v){memStore[k]=v;try{localStorage.setItem(k,v);}catch(e){}}
+function lsRemove(k){delete memStore[k];try{localStorage.removeItem(k);}catch(e){}}
+var memSession=false;
+function setSession(v){memSession=!!v;try{sessionStorage.setItem(SS_SESS,v?'1':'0');}catch(e){}}
+function getSession(){try{return sessionStorage.getItem(SS_SESS)==='1';}catch(e){return memSession;}}
+function clearSession(){memSession=false;try{sessionStorage.removeItem(SS_SESS);}catch(e){}}
+/* ترميز UTF-8 يدوي (يعمل في كل المتصفحات حتى بدون TextEncoder) */
+function utf8Encode(str){
+  var out='',i,c;
+  for(i=0;i<str.length;i++){
+    c=str.charCodeAt(i);
+    if(c<128){out+=String.fromCharCode(c);}
+    else if(c<2048){out+=String.fromCharCode((c>>6)|192,(c&63)|128);}
+    else if(c>=55296&&c<57344){
+      var c2=str.charCodeAt(++i);
+      c=65536+((c&1023)<<10)+(c2&1023);
+      out+=String.fromCharCode((c>>18)|240,((c>>12)&63)|128,((c>>6)&63)|128,(c&63)|128);
+    }
+    else{out+=String.fromCharCode((c>>12)|224,((c>>6)&63)|128,(c&63)|128);}
+  }
+  return out;
 }
-function fails(){return parseInt(localStorage.getItem(LS_FAILS)||'0',10)||0;}
-function lockUntil(){return parseInt(localStorage.getItem(LS_LOCK)||'0',10)||0;}
+function utf8Bytes(str){
+  var s=utf8Encode(str),bytes=new Uint8Array(s.length),i;
+  for(i=0;i<s.length;i++) bytes[i]=s.charCodeAt(i);
+  return bytes;
+}
+/* SHA-256 خالص بجافاسكربت (احتياطي عند غياب WebCrypto — نفس الناتج تمامًا) */
+function sha256jsHex(ascii){
+  function rr(v,a){return (v>>>a)|(v<<(32-a));}
+  var maxWord=Math.pow(2,32),result='',words=[],asciiBitLength=ascii.length*8;
+  var hash=[],k=[],primeCounter=0,isComposite={},candidate,i,j;
+  for(candidate=2;primeCounter<64;candidate++){
+    if(!isComposite[candidate]){
+      for(i=0;i<313;i+=candidate){isComposite[i]=candidate;}
+      hash[primeCounter]=(Math.pow(candidate,0.5)*maxWord)|0;
+      k[primeCounter++]=(Math.pow(candidate,1/3)*maxWord)|0;
+    }
+  }
+  ascii+='\x80';
+  while(ascii.length%64-56) ascii+='\x00';
+  for(i=0;i<ascii.length;i++){
+    j=ascii.charCodeAt(i);
+    if(j>>8) return '';
+    words[i>>2]|=j<<((3-i)%4)*8;
+  }
+  words[words.length]=((asciiBitLength/maxWord)|0);
+  words[words.length]=(asciiBitLength);
+  for(j=0;j<words.length;){
+    var w=words.slice(j,j+=16),oldHash=hash;
+    hash=hash.slice(0,8);
+    for(i=0;i<64;i++){
+      var w15=w[i-15],w2=w[i-2],a=hash[0],e=hash[4];
+      var temp1=hash[7]+(rr(e,6)^rr(e,11)^rr(e,25))+((e&hash[5])^((~e)&hash[6]))+k[i]
+        +(w[i]=(i<16)?w[i]:(w[i-16]+(rr(w15,7)^rr(w15,18)^(w15>>>3))+w[i-7]+(rr(w2,17)^rr(w2,19)^(w2>>>10)))|0);
+      var temp2=(rr(a,2)^rr(a,13)^rr(a,22))+((a&hash[1])^(a&hash[2])^(hash[1]&hash[2]));
+      hash=[(temp1+temp2)|0].concat(hash);
+      hash[4]=(hash[4]+temp1)|0;
+    }
+    for(i=0;i<8;i++){hash[i]=(hash[i]+oldHash[i])|0;}
+  }
+  for(i=0;i<8;i++){
+    for(j=3;j+1;j--){
+      var b=(hash[i]>>(j*8))&255;
+      result+=((b<16)?0:'')+b.toString(16);
+    }
+  }
+  return result;
+}
+function sha256hex(str){
+  var bytes=utf8Bytes(str);
+  if(window.crypto&&window.crypto.subtle&&window.crypto.subtle.digest){
+    return window.crypto.subtle.digest('SHA-256',bytes).then(function(buf){
+      return Array.prototype.map.call(new Uint8Array(buf),function(b){return ('0'+b.toString(16)).slice(-2);}).join('');
+    }).catch(function(){return sha256jsHex(utf8Encode(str));});
+  }
+  return Promise.resolve(sha256jsHex(utf8Encode(str)));
+}
+function fails(){return parseInt(lsGet(LS_FAILS)||'0',10)||0;}
+function lockUntil(){return parseInt(lsGet(LS_LOCK)||'0',10)||0;}
 function isLocked(){return Date.now()<lockUntil();}
-function storedUser(){try{return localStorage.getItem(LS_USER)||DEFAULT_USER;}catch(e){return DEFAULT_USER;}}
+function storedUser(){return lsGet(LS_USER)||DEFAULT_USER;}
 function seedCreds(){
-  try{
-    if(!localStorage.getItem(LS_HASH)) localStorage.setItem(LS_HASH,DEFAULT_HASH);
-    if(!localStorage.getItem(LS_USER)) localStorage.setItem(LS_USER,DEFAULT_USER);
-  }catch(e){}
+  if(!lsGet(LS_HASH)) lsSet(LS_HASH,DEFAULT_HASH);
+  if(!lsGet(LS_USER)) lsSet(LS_USER,DEFAULT_USER);
 }
 function showGate(){
   $('gate').classList.remove('hidden');
@@ -659,27 +733,26 @@ function handleLogin(e){
   var pass=$('loginPass').value;
   if(user!==storedUser()){err.textContent='اسم المستخدم غير صحيح.';return;}
   sha256hex(pass).then(function(hash){
-    var stored=null;
-    try{stored=localStorage.getItem(LS_HASH);}catch(ex){}
+    var stored=lsGet(LS_HASH);
     if(stored && hash===stored){
-      try{localStorage.setItem(LS_FAILS,'0');localStorage.removeItem(LS_LOCK);}catch(ex2){}
-      try{sessionStorage.setItem(SS_SESS,'1');}catch(ex3){}
+      lsSet(LS_FAILS,'0');lsRemove(LS_LOCK);
+      setSession(true);
       showApp();
     }else{
       var f=fails()+1;
-      try{localStorage.setItem(LS_FAILS,String(f));}catch(ex4){}
+      lsSet(LS_FAILS,String(f));
       if(f>=MAX_FAILS){
-        try{localStorage.setItem(LS_LOCK,String(Date.now()+LOCK_MS));localStorage.setItem(LS_FAILS,'0');}catch(ex5){}
+        lsSet(LS_LOCK,String(Date.now()+LOCK_MS));lsSet(LS_FAILS,'0');
         err.textContent='محاولات خاطئة كثيرة. تم قفل الدخول لمدة 10 دقائق.';
         refreshLockState();
       }else{
         err.textContent='كلمة المرور غير صحيحة. (محاولة '+f+' من '+MAX_FAILS+')';
       }
     }
-  }).catch(function(){err.textContent='هذا المتصفح لا يدعم التشفير المطلوب (SHA-256). جرّب متصفحًا حديثًا.';});
+  }).catch(function(){err.textContent='حدث خطأ غير متوقع أثناء التحقق. حاول مجددًا.';});
 }
 function handleLogout(){
-  try{sessionStorage.removeItem(SS_SESS);}catch(e){}
+  clearSession();
   showGate();
 }
 function renderSecurity(){
@@ -697,19 +770,16 @@ function handleCredChange(e){
   if(np.length<8){err.textContent='كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل.';return;}
   if(np!==np2){err.textContent='كلمتا المرور الجديدتان غير متطابقتين.';return;}
   sha256hex(cur).then(function(curHash){
-    var stored=null;
-    try{stored=localStorage.getItem(LS_HASH);}catch(ex){}
+    var stored=lsGet(LS_HASH);
     if(!stored||curHash!==stored){err.textContent='كلمة المرور الحالية غير صحيحة.';return;}
     return sha256hex(np).then(function(newHash){
-      try{
-        localStorage.setItem(LS_USER,nu);
-        localStorage.setItem(LS_HASH,newHash);
-      }catch(ex2){}
+      lsSet(LS_USER,nu);
+      lsSet(LS_HASH,newHash);
       $('loginUser').value=nu;
       renderSecurity();
       ok.textContent='تم حفظ بيانات الدخول الجديدة.';
     });
-  }).catch(function(){err.textContent='هذا المتصفح لا يدعم التشفير المطلوب (SHA-256). جرّب متصفحًا حديثًا.';});
+  }).catch(function(){err.textContent='حدث خطأ غير متوقع أثناء الحفظ. حاول مجددًا.';});
 }
 
 /* ================= المحررات ================= */
@@ -1121,12 +1191,8 @@ function init(){
   bindEvents();
   savedCfgJson=JSON.stringify(cfg);
   var h0=loadHistory(); if(h0.length) lastSavedAt=h0[h0.length-1].t;
-  if(!(window.crypto&&window.crypto.subtle)){
-    $('gateErr').textContent='هذا المتصفح لا يدعم التشفير المطلوب (SHA-256). جرّب متصفحًا حديثًا.';
-  }
   seedCreds();
-  var sess=false;
-  try{sess=sessionStorage.getItem(SS_SESS)==='1';}catch(e){}
+  var sess=getSession();
   if(sess){showApp();}
   else{showGate();}
 }
